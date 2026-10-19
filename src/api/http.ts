@@ -50,11 +50,18 @@ export async function requestJson<T>(
   options: { method?: string; body?: unknown } = {},
 ): Promise<T> {
   const { method = 'GET', body } = options
-  const response = await fetch(`${resolveBffUrl()}${path}`, {
-    method,
-    headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  })
+  const url = `${resolveBffUrl()}${path}`
+  let response: Response
+  try {
+    response = await fetch(url, {
+      method,
+      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    })
+  } catch (cause) {
+    const reason = cause instanceof Error ? cause.message : String(cause)
+    throw new Error(`No se pudo conectar con el BFF en ${url} — ${reason}`)
+  }
   if (!response.ok) throw new Error(await errorMessage(response))
   if (response.status === 204) return undefined as T
   const text = await response.text()
