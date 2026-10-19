@@ -19,8 +19,6 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
-  max-width: 1380px;
-  margin: 0 auto;
   width: 100%;
 }
 
