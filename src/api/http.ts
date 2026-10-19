@@ -30,6 +30,14 @@ function resolveBffUrl(): string {
     throw new Error(`VITE_BFF_URL debe empezar por http:// o https://: "${raw}"`)
   }
 
+  if (url.protocol === 'http:' && window.location.protocol === 'https:') {
+    console.warn(
+      `VITE_BFF_URL usa http:// en una página https:// (mixed content): se usará https:// — ${raw}`,
+    )
+    cachedBffUrl = `https://${raw.slice('http://'.length)}`
+    return cachedBffUrl
+  }
+
   cachedBffUrl = raw
   return cachedBffUrl
 }
