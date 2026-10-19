@@ -26,10 +26,10 @@ export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAdd
     { key: 'hijitos', label: 'Hijitos', icon: '#icon-paw' },
     { key: 'accounts', label: 'Cuentas', icon: '#icon-wallet' },
     { key: 'calendar', label: 'Calendario', icon: '#icon-calendar' },
-    { key: 'weight', label: 'Control de peso', icon: '#icon-scale' },
     { key: 'collection', label: 'Colección', icon: '#icon-collection' },
+    { key: 'shopping', label: 'Lista de compras', icon: '#icon-cart' },
+    { key: 'weight', label: 'Control de peso', icon: '#icon-scale' },
     { key: 'wiki', label: 'Wiki', icon: '#icon-book' },
-    { key: 'shopping', label: 'Lista de Compras', icon: '#icon-cart' },
   ]
 
   const handleBrandClick = (e: React.MouseEvent) => {

@@ -16,7 +16,6 @@ La navegación es un estado interno en `src/App.tsx` (sin router):
 
 | Sección | Descripción |
 |---|---|
-| Vista general | Hero + tareas destacadas |
 | Mis tareas | Tareas con pestañas por contexto/proyecto |
 | Hijitos | Seguimiento por tracks (tareas, subtareas, prioridades, banners) |
 | Cuentas | Cuentas con columnas propias y registros (movimientos) |

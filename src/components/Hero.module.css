@@ -15,11 +15,9 @@
 
 .hero {
   display: flex;
-  border: 1px solid var(--line);
-  border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(180deg, #fff, #f5f9f8);
-  min-height: 180px;
+  background: transparent;
+  min-height: 0;
 }
 
 .heroContent {
@@ -57,13 +55,13 @@
 }
 
 .quickNav {
-  flex: 0 0 44%;
-  min-width: 340px;
-  border-left: 1px solid var(--line);
-  padding: 18px 20px;
+  flex: 1 1 100%;
+  width: 100%;
+  border-left: none;
+  padding: 10px 0 12px 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
   align-content: center;
 }
 
@@ -72,20 +70,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 5px;
   aspect-ratio: 1;
-  padding: 12px;
+  padding: 11px 6px;
   border: 1px solid var(--line);
   border-radius: var(--control-radius);
   background: #fff;
   color: var(--ink);
-  font-size: var(--fs-sm);
+  font-size: 10.5px;
+  line-height: 0.9;
   text-align: center;
+  word-break: break-word;
 }
 
 .quickNavItem svg {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
 }
 
 .quickNavItem:hover {
@@ -101,20 +101,13 @@
 }
 
 :global([data-theme='dark']) .hero {
-  background: #10283a;
-  border-color: #30495b;
+  background: transparent;
 }
 
-:global([data-theme='dark']) .heroContent p {
-  color: #b3c7d9;
-}
 
-:global([data-theme='dark']) .heroContent a {
-  color: #6de5d3;
-}
 
 :global([data-theme='dark']) .quickNav {
-  border-color: #30495b;
+  border-color: transparent;
 }
 
 :global([data-theme='dark']) .quickNavItem {
@@ -140,28 +133,19 @@
     min-height: 0;
   }
 
-  .heroContent {
-    padding: 20px;
-  }
-
-  .heroContent h2 {
-    font-size: var(--fs-3xl);
-  }
-
   .quickNav {
     min-width: 0;
     width: 100%;
     border-left: none;
-    border-top: 1px solid var(--line);
-    padding: 12px;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
+    padding: 10px 0 12px 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
   }
 
   .quickNavItem {
-    padding: 8px 4px;
-    gap: 6px;
-    font-size: var(--fs-2xs);
+    padding: 11px 5px;
+    gap: 5px;
+    font-size: 9.5px;
   }
 
   .quickNavItem svg {
@@ -183,14 +167,14 @@
   }
 
   .quickNavItem {
-    padding: 8px;
+  padding: 6px;
     gap: 7px;
     font-size: var(--fs-xs);
   }
 
   .quickNavItem svg {
-    width: 27px;
-    height: 27px;
+    width: 26px;
+    height: 26px;
   }
 }
 

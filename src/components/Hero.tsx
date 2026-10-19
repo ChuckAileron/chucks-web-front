@@ -8,11 +8,14 @@ interface HeroProps {
 }
 
 const quickLinks: { key: NavKey; label: string; icon: string }[] = [
-  { key: 'home', label: 'Vista general', icon: '#icon-grid' },
   { key: 'tasks', label: 'Mis tareas', icon: '#icon-check' },
+  { key: 'hijitos', label: 'Hijitos', icon: '#icon-paw' },
+  { key: 'accounts', label: 'Cuentas', icon: '#icon-wallet' },
+  { key: 'calendar', label: 'Calendario', icon: '#icon-calendar' },
   { key: 'collection', label: 'Colección', icon: '#icon-collection' },
+  { key: 'shopping', label: 'Lista de compras', icon: '#icon-cart' },
+  { key: 'weight', label: 'Control de peso', icon: '#icon-scale' },
   { key: 'wiki', label: 'Wiki', icon: '#icon-book' },
-  { key: 'shopping', label: 'Lista de Compras', icon: '#icon-cart' },
 ]
 
 export function Hero({ active, onNavigate }: HeroProps) {
@@ -22,16 +25,7 @@ export function Hero({ active, onNavigate }: HeroProps) {
         <img src={bannerImg} alt="Banner de CHUCK's Web" />
       </div>
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <h2>Espacio personal.</h2>
-          <p>Pendientes, ideas y próximos pasos, en un mismo lugar.</p>
-          <a href="#tareas" onClick={(e) => { e.preventDefault(); onNavigate('tasks'); }}>
-            Ver tareas pendientes
-            <svg>
-              <use href="#icon-arrow" />
-            </svg>
-          </a>
-        </div>
+
         <nav className={styles.quickNav} aria-label="Accesos rápidos">
           {quickLinks.map((item) => (
             <button
