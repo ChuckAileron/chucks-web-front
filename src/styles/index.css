@@ -284,18 +284,21 @@ svg {
   min-height: var(--control-height);
   border-radius: var(--control-radius);
   font-size: var(--control-font-size);
+  font-weight: 400;
 }
 
 .collection-tool .collection-reorder > div button,
 .collection-tool .collection-catalog-controls button {
   min-height: var(--control-height-compact);
   border-radius: var(--control-radius-compact);
+  font-weight: 400;
 }
 
 .collection-tool .platform-select-list button {
   min-height: var(--control-height-compact);
   border-radius: var(--control-radius-compact);
   font-size: var(--control-font-size);
+  font-weight: 400;
 }
 
 .collection-tool .collection-toolbar input,

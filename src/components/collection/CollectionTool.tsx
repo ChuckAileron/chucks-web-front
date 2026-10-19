@@ -180,27 +180,36 @@ export default function CollectionTool() {
       setItems(await fetchCollectionItems(item.collectionId, search))
     })
   }
-  const exportActive = () =>
+  const exportCollectionFile = (collection: Collection) =>
     run(async () => {
-      if (!active) return
-      const payload = await exportCollection(active.id)
-      downloadTextFile(`${sanitizeFileName(active.name)}.json`, JSON.stringify(payload, null, 2))
-      setMessage(`Colección "${active.name}" exportada.`)
+      const payload = await exportCollection(collection.id)
+      downloadTextFile(
+        `chucks-collection-${sanitizeFileName(collection.name.toLowerCase())}.json`,
+        JSON.stringify(payload, null, 2),
+      )
+      setMessage(`Colección "${collection.name}" exportada.`)
     })
-  const importFile = (file: File) =>
+  const exportActive = () => {
+    if (active) void exportCollectionFile(active)
+  }
+  const openImportPicker = () => importInputRef.current?.click()
+  const importFiles = (files: File[]) =>
     run(async () => {
-      const raw = await file.text()
-      let payload: unknown
-      try {
-        payload = JSON.parse(raw)
-      } catch {
-        throw new Error('El archivo no contiene un JSON válido.')
+      const imported: string[] = []
+      const errors: string[] = []
+      let lastId: number | null = null
+      for (const file of files) {
+        try {
+          const payload = parseCollectionPayload(await file.text())
+          const collection = await importCollection(payload)
+          imported.push(collection.name)
+          lastId = collection.id
+        } catch (error) {
+          errors.push(`${file.name}: ${errorMessage(error)}`)
+        }
       }
-      if (!payload || typeof payload !== 'object' || Array.isArray(payload))
-        throw new Error('El archivo no contiene una colección válida.')
-      const imported = await importCollection(payload as Record<string, unknown>)
-      await loadCollections(imported.id)
-      setMessage(`Colección "${imported.name}" importada.`)
+      if (lastId !== null) await loadCollections(lastId)
+      setMessage(importSummary(files.length, imported.length, errors))
     })
   const editItem = (item: CollectionItem) =>
     setItemDraft({
@@ -230,11 +239,12 @@ export default function CollectionTool() {
         ref={importInputRef}
         type="file"
         accept=".json,application/json"
+        multiple
         hidden
         onChange={(event) => {
-          const file = event.target.files?.[0]
+          const files = Array.from(event.target.files ?? [])
           event.target.value = ''
-          if (file) void importFile(file)
+          if (files.length) void importFiles(files)
         }}
       />
       {previewImage && <div className={styles.imagePreviewOverlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setPreviewImage(null) }}><div className={styles.imagePreviewModal} role="dialog" aria-modal="true" aria-label={`Vista original: ${previewImage.alt}`} tabIndex={-1}><button className={styles.imagePreviewClose} aria-label="Cerrar imagen" onClick={() => setPreviewImage(null)}>×</button><img src={previewImage.src} alt={previewImage.alt} /></div></div>}
@@ -310,7 +320,7 @@ export default function CollectionTool() {
               <details className={styles.overflow} ref={actionsRef}>
                 <summary aria-label="Más opciones">•••</summary>
                 <div className={styles.menuItems}>
-                  <button type="button" onClick={() => { actionsRef.current?.removeAttribute('open'); importInputRef.current?.click() }}>Importar JSON</button>
+                  <button type="button" onClick={() => { actionsRef.current?.removeAttribute('open'); openImportPicker() }}>Importar JSON</button>
                   <button type="button" disabled={!active || busy} onClick={() => { actionsRef.current?.removeAttribute('open'); void exportActive() }}>Exportar JSON</button>
                 </div>
               </details>
@@ -401,6 +411,8 @@ export default function CollectionTool() {
             busy={busy}
             save={saveCollection}
             remove={removeCollection}
+            exportCollection={active && !editingNewCollection ? () => exportCollectionFile(active) : undefined}
+            importCollection={openImportPicker}
             collections={collections}
             activeId={activeId}
             onMove={moveCollection}
@@ -423,6 +435,34 @@ function EmptyCollection({ text, action, onAction }: { text: string; action?: st
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error)
+}
+
+function parseCollectionPayload(raw: string): Record<string, unknown> {
+  let payload: unknown
+  try {
+    payload = JSON.parse(raw)
+  } catch {
+    throw new Error('El archivo no contiene un JSON válido.')
+  }
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload))
+    throw new Error('El archivo no contiene una colección válida.')
+  const record = payload as Record<string, unknown>
+  const nested =
+    record.collection && typeof record.collection === 'object' && !Array.isArray(record.collection)
+      ? (record.collection as Record<string, unknown>)
+      : null
+  const source = nested ?? record
+  const hasIdentity = typeof source.name === 'string' || typeof record.type === 'string' || typeof source.type === 'string'
+  const hasBody =
+    Array.isArray(source.columns) || Array.isArray(source.items) || Array.isArray(record.items)
+  if (!hasIdentity || !hasBody)
+    throw new Error('Falta la estructura esperada de una colección (name, columns, items o type).')
+  return record
+}
+
+function importSummary(total: number, imported: number, errors: string[]) {
+  const base = `Importación: ${imported}/${total} archivo(s) importado(s) correctamente.`
+  return errors.length ? `${base} Errores → ${errors.join(' · ')}` : base
 }
 
 function formatValue(value: unknown, type: ColumnType) {

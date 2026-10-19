@@ -240,7 +240,7 @@
   background: var(--c-bg-fff);
   color: var(--c-text-38443e);
   font-size: var(--fs-2xs);
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
 }
 .image-search-modal > footer button:disabled {
@@ -320,7 +320,7 @@
   background: transparent;
   color: var(--c-text-77807a);
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: 400;
 }
 .collection-tabs button.active {
   border-bottom-color: var(--brand);
@@ -366,7 +366,7 @@
   background: var(--c-bg-fff);
   color: var(--c-text-41504a);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: 400;
 }
 .collection-selector > button,
 .collection-toolbar button:last-child,
@@ -451,7 +451,7 @@
 }
 .collection-view-toggle button {
   border-radius: 0;
-  font-weight: 700;
+  font-weight: 400;
 }
 .collection-view-toggle button:first-child {
   border-radius: 7px 0 0 7px;
@@ -466,7 +466,7 @@
   color: var(--brand-ink);
 }
 .collection-sort-direction {
-  font-weight: 700;
+  font-weight: 400;
 }
 .collection-grid {
   display: grid;
@@ -572,6 +572,10 @@
 .collection-settings-actions button:first-child:not(:last-child) {
   border-color: var(--c-border-e4b8ad);
   color: var(--c-text-a44235);
+}
+.collection-settings-actions button.collection-import-action {
+  border-color: var(--c-border-d7dcd7) !important;
+  color: var(--c-text-41504a) !important;
 }
 .collection-empty {
   min-height: 280px;
@@ -908,7 +912,7 @@
   background: var(--c-bg-fff);
   color: var(--c-text-41504a);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: 400;
   white-space: nowrap;
 }
 .wishlist-grid {
@@ -979,7 +983,7 @@
   background: var(--c-bg-fff);
   color: var(--c-text-41504a);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: 400;
 }
 .wishlist-card footer button:last-child,
 .wishlist-source > button:last-child {
@@ -1154,7 +1158,7 @@
   background: var(--c-bg-fff);
   color: var(--c-text-41504a);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: 400;
   white-space: nowrap;
 }
 .launchbox-section > header > button:disabled,
@@ -1295,7 +1299,7 @@
   background: var(--c-bg-fff);
   color: var(--c-text-41504a);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: 400;
 }
 .launchbox-badge {
   padding: 2px 8px;

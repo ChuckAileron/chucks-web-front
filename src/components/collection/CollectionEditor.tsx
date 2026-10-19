@@ -52,6 +52,8 @@ export default function CollectionEditor({
   busy,
   save,
   remove,
+  exportCollection,
+  importCollection,
   collections,
   activeId,
   onMove,
@@ -63,6 +65,8 @@ export default function CollectionEditor({
   busy: boolean
   save: () => void
   remove: () => void
+  exportCollection?: () => void
+  importCollection?: () => void
   collections: Collection[]
   activeId: number | null
   onMove: (id: number, direction: -1 | 1) => void
@@ -207,6 +211,22 @@ export default function CollectionEditor({
       </section>
       <div className="collection-settings-actions">
         {canDelete && <button onClick={remove}>Eliminar colección</button>}
+        {!isNew && exportCollection && (
+          <button type="button" disabled={busy} onClick={exportCollection} title="Descarga un JSON con la colección completa (columnas e ítems)">
+            Exportar JSON
+          </button>
+        )}
+        {importCollection && (
+          <button
+            type="button"
+            className="collection-import-action"
+            disabled={busy}
+            onClick={importCollection}
+            title="Importa una o varias colecciones desde archivos JSON"
+          >
+            Importar JSON
+          </button>
+        )}
         <button disabled={busy || !draft.name.trim()} onClick={save}>
           {isNew ? 'Crear colección' : 'Guardar cambios'}
         </button>
