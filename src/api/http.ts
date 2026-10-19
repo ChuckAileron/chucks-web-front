@@ -1,4 +1,38 @@
-const BFF_URL = import.meta.env.VITE_BFF_URL ?? 'http://localhost:3000'
+const LOCAL_BFF_URL = 'http://localhost:3000'
+
+let cachedBffUrl: string | undefined
+
+function resolveBffUrl(): string {
+  if (cachedBffUrl !== undefined) return cachedBffUrl
+
+  const raw = String(import.meta.env.VITE_BFF_URL ?? '')
+    .trim()
+    .replace(/\/+$/, '')
+
+  if (raw === '') {
+    if (import.meta.env.PROD) {
+      throw new Error(
+        'Falta VITE_BFF_URL: define la URL pública del BFF en las variables de entorno del servicio frontend y vuelve a desplegar.',
+      )
+    }
+    console.warn(`VITE_BFF_URL no definida; se usa ${LOCAL_BFF_URL}`)
+    cachedBffUrl = LOCAL_BFF_URL
+    return cachedBffUrl
+  }
+
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    throw new Error(`VITE_BFF_URL no es una URL válida: "${raw}"`)
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error(`VITE_BFF_URL debe empezar por http:// o https://: "${raw}"`)
+  }
+
+  cachedBffUrl = raw
+  return cachedBffUrl
+}
 
 async function errorMessage(response: Response): Promise<string> {
   try {
@@ -16,7 +50,7 @@ export async function requestJson<T>(
   options: { method?: string; body?: unknown } = {},
 ): Promise<T> {
   const { method = 'GET', body } = options
-  const response = await fetch(`${BFF_URL}${path}`, {
+  const response = await fetch(`${resolveBffUrl()}${path}`, {
     method,
     headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
