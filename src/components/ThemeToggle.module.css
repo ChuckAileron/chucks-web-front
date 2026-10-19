@@ -1,0 +1,47 @@
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  min-width: var(--control-height);
+  min-height: var(--control-height);
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--control-font-size);
+  white-space: nowrap;
+}
+
+.themeToggle:hover {
+  background: var(--primary-action-bg);
+  color: var(--primary-action-ink);
+  border-color: var(--primary-action-bg);
+}
+
+.sun {
+  display: none;
+}
+
+[data-theme='dark'] .themeToggle .sun {
+  display: block;
+}
+
+[data-theme='dark'] .themeToggle .moon {
+  display: none;
+}
+
+.themeLabel {
+  display: inline;
+}
+
+@media (max-width: 800px) {
+  .themeToggle {
+    padding: 8px;
+  }
+
+  .themeLabel {
+    display: none;
+  }
+}

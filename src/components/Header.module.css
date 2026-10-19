@@ -1,0 +1,124 @@
+.header {
+  height: 82px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 42px;
+  position: sticky;
+  top: 0;
+  background: var(--canvas);
+  z-index: 5;
+}
+
+.mobileMenu {
+  display: none;
+}
+
+.breadcrumb {
+  font-size: var(--fs-base);
+  color: #617184;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.breadcrumb strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.headerRight {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  width: var(--control-height);
+  height: var(--control-height);
+  border-radius: var(--control-radius);
+}
+
+.notification:after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #29d7c0;
+  border: 2px solid var(--canvas);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 30%, #6ef1dc, #29d7c0 70%);
+  color: #06221f;
+  font-weight: 700;
+  font-size: var(--fs-xs);
+}
+
+:global([data-theme='dark']) .header {
+  background: #122136;
+}
+
+:global([data-theme='dark']) .breadcrumb {
+  color: #b3c7d9;
+}
+
+:global([data-theme='dark']) .notification {
+  color: #b3c7d9;
+}
+
+:global([data-theme='dark']) .notification:after {
+  border-color: #122136;
+}
+
+:global([data-theme='dark']) .mobileMenu {
+  color: #eef4fa;
+}
+
+@media (max-width: 1100px) {
+  .header {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 800px) {
+  .header {
+    height: 72px;
+    padding: 0 20px;
+  }
+
+  .mobileMenu {
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  width: var(--control-height);
+  height: var(--control-height);
+  border-radius: var(--control-radius);
+  }
+
+  .breadcrumb > span:not(:last-child) {
+    display: none;
+  }
+
+  .headerRight {
+    gap: 4px;
+  }
+}

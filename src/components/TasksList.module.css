@@ -1,0 +1,123 @@
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.headInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.sectionHead h2 {
+  margin: 0;
+  font-size: var(--fs-3xl);
+  letter-spacing: -0.5px;
+}
+
+.contextTabs {
+  margin: -3px 0 4px;
+}
+
+.contextTabs .addContext { gap: 4px; margin-left: auto; padding-inline: 10px; color: var(--teal); }
+.contextTabs .addContext span { font-size: var(--fs-xs); }
+.contextTabs .manageContexts { gap: 5px; padding-inline: 10px; color: var(--muted); }
+.contextTabs .manageContexts:hover { color: var(--ink); }
+
+.contextManagerOverlay { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: rgba(5, 13, 23, .48); backdrop-filter: blur(3px); }
+.contextManager { width: min(580px, 100%); max-height: min(680px, 90vh); overflow: auto; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--canvas); color: var(--ink); box-shadow: 0 18px 60px #0004; }
+.contextManager > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.managerEyebrow { color: var(--muted); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; }
+.contextManager h2 { margin: 4px 0 0; font-size: var(--fs-xl); }
+.contextManager .closeManager { width: var(--control-height-compact); min-height: var(--control-height-compact); padding: 0; font-size: var(--fs-lg); }
+.managerIntro { margin: 10px 0 18px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.55; }
+.contextError { margin: 0 0 12px; color: #b34535; font-size: var(--fs-sm); }
+.contextManagerList { display: grid; gap: 7px; }
+.contextManagerRow { min-height: 54px; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--control-radius); background: transparent; }
+.contextName { min-width: 0; flex: 1; overflow-wrap: anywhere; font-size: var(--fs-sm); font-weight: 650; }
+.contextTaskCount { flex: none; color: var(--muted); font-size: var(--fs-xs); }
+.manageAction, .manageDelete { min-height: var(--control-height-compact); padding: 6px 9px; border-radius: var(--control-radius-compact); font-size: var(--fs-xs); }
+.manageAction { color: var(--teal); }
+.manageDelete { color: #b34535; }
+.renameContextForm { width: 100%; display: flex; align-items: center; gap: 7px; }
+.renameContextForm input { min-width: 0; flex: 1; min-height: var(--control-height-compact); padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--control-radius-compact); background: transparent; color: var(--ink); font-size: var(--fs-sm); }
+.renameContextForm button { min-height: var(--control-height-compact); padding: 6px 9px; border-radius: var(--control-radius-compact); font-size: var(--fs-xs); }
+.managerEmpty { padding: 18px 0; color: var(--muted); text-align: center; font-size: var(--fs-sm); }
+.contextManager > footer { display: flex; justify-content: flex-end; margin-top: 17px; }
+.secondaryManageButton { min-height: var(--control-height-compact); padding: 7px 12px; border-radius: var(--control-radius); }
+
+.pendingCount {
+  font-size: var(--fs-sm);
+  color: #617184;
+}
+
+.addButton {
+  min-height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-action-bg);
+  color: var(--primary-action-ink);
+  border: none;
+  border-radius: var(--control-radius);
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: var(--control-font-size);
+  cursor: pointer;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.addButton:hover { background: var(--primary-action-hover); }
+
+.empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  color: #617184;
+  font-size: var(--fs-md);
+}
+
+.taskList {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+:global([data-theme='dark']) .pendingCount {
+  color: #adbdce;
+}
+
+:global([data-theme='dark']) .addButton {
+  background: var(--primary-action-bg);
+  color: var(--primary-action-ink);
+  box-shadow: none;
+}
+
+:global([data-theme='dark']) .empty {
+  color: #adbdce;
+}
+
+:global([data-theme='dark']) .taskList {
+  background: #122136;
+  border-color: #34465a;
+}
+
+@media (max-width: 520px) {
+  .contextManager { padding: 16px; }
+  .contextManagerRow { flex-wrap: wrap; }
+  .contextName { flex-basis: calc(100% - 4px); }
+  .contextTaskCount { margin-right: auto; }
+  .renameContextForm { flex-wrap: wrap; }
+  .renameContextForm input { flex-basis: 100%; }
+}

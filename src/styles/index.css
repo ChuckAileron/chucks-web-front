@@ -1,0 +1,312 @@
+@import './collection-suite.css';
+
+:root {
+  --navy: #0B192C;
+  --turquoise: #29D7C0;
+  --ink: #14283D;
+  --muted: #617184;
+  --line: #E0E8EC;
+  --canvas: #F5F8FA;
+  --teal: #087668;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --control-height: 40px;
+  --control-height-compact: 34px;
+  --control-radius: 8px;
+  --control-radius-compact: 6px;
+  --control-padding-x: 12px;
+  --control-font-size: var(--fs-sm);
+  --control-font-weight: 600;
+  --tab-height: 42px;
+  --tab-padding-x: 14px;
+  --primary-action-bg: var(--turquoise);
+  --primary-action-ink: #0B192C;
+  --primary-action-hover: #57E4D1;
+
+  /* Escala tipográfica universal: reutilizar estas variables en lugar de px sueltos. */
+  --fs-2xs: 10px; /* micro: badges y etiquetas sobre imagen */
+  --fs-xs: 11px; /* metadatos muy pequeños */
+  --fs-sm: 12px; /* texto secundario */
+  --fs-md: 13px; /* cuerpo compacto y etiquetas de formulario */
+  --fs-base: 14px; /* cuerpo de componentes */
+  --fs-lg: 16px; /* texto base del documento */
+  --fs-xl: 18px; /* subtítulos */
+  --fs-2xl: 20px; /* títulos de sección y modales */
+  --fs-3xl: 24px; /* títulos destacados */
+  --fs-4xl: 28px; /* display (hero, cifras grandes) */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: var(--fs-lg)/1.5 var(--font-sans);
+  color: var(--ink);
+  background: var(--canvas);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button {
+  min-height: var(--control-height);
+  padding: 8px var(--control-padding-x);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+:where(input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']), select, textarea) {
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  color: var(--ink);
+  font-size: var(--control-font-size);
+}
+
+:where(input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']), select) {
+  min-height: var(--control-height);
+  padding: 8px var(--control-padding-x);
+  background: transparent;
+}
+
+textarea {
+  padding: 10px var(--control-padding-x);
+  background: transparent;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+
+.app-tabs {
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  scrollbar-width: thin;
+}
+
+.app-tabs button {
+  min-height: var(--tab-height);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px var(--tab-padding-x);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.app-tabs button:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+.app-tabs button.active,
+.app-tabs button[aria-selected='true'] {
+  border-bottom-color: var(--teal);
+  color: var(--teal);
+}
+
+.app-tabs button b {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 12%, transparent);
+  color: var(--teal);
+  font-size: var(--fs-2xs);
+}
+
+svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: #0f1319;
+  --ink: #EEF4FA;
+  --muted: #ADBDCE;
+  --line: #34465A;
+  --teal: #6DE5D3;
+}
+
+:root[data-theme='dark'] dialog {
+  background: #122136;
+}
+
+:root[data-theme='dark'] dialog input::placeholder {
+  color: #A0B1C4;
+  opacity: 1;
+}
+
+:root[data-theme='dark'] dialog {
+  border-color: #475A70;
+  box-shadow: 0 15px 80px #0006;
+}
+
+:root[data-theme='dark'] dialog input {
+  background: #0C1A2C;
+  border-color: #5D7189;
+  color: #EEF4FA;
+}
+
+:root[data-theme='dark'] button:focus-visible,
+:root[data-theme='dark'] a:focus-visible,
+:root[data-theme='dark'] input:focus-visible {
+  outline-color: #6DE5D3;
+}
+
+/* Ajuste propio de la web: la sección ocupa todo el ancho disponible, sin borde
+   ni esquinas redondeadas, y con el fondo transparente para fundirse con el fondo
+   de la web (sin cambios de color ni bordes visibles). */
+.collection-tool {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  border: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.collection-tool,
+.collection-tool > header,
+.collection-tool .collection-tabs {
+  background: transparent;
+}
+
+.collection-tool .collection-tabs {
+  padding-left: 0;
+  padding-right: 0;
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.collection-tool .collection-workspace {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Ajuste propio de la web: unifica la tipografía de la sección con la del resto
+   de la interfaz (los estilos portados declaran Manrope/DM Sans). */
+.collection-tool,
+.collection-tool * {
+  font-family: var(--font-sans) !important;
+}
+
+/* Ajuste propio de la web: ancla el pie (Editar/Eliminar) de cada ficha al fondo
+   aunque las tarjetas de la cuadrícula tengan alturas distintas. La vista de lista
+   conserva su propio layout (mayor especificidad en collection-suite.css). */
+.collection-tool .collection-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-tool .collection-card > div:nth-child(2) {
+  flex: 1;
+}
+
+.collection-tool .collection-selector button,
+.collection-tool .collection-toolbar button,
+.collection-tool .collection-item-editor button,
+.collection-tool .collection-settings button,
+.collection-tool .collection-settings-actions button,
+.collection-tool .collection-save-item,
+.collection-tool .wishlist-summary button,
+.collection-tool .wishlist-card button,
+.collection-tool .wishlist-sources button,
+.collection-tool .wishlist-add-source button,
+.collection-tool .image-search-modal > footer button,
+.collection-tool .launchbox-section > header > button,
+.collection-tool .launchbox-single-form button,
+.collection-tool .launchbox-bulk-actions button,
+.collection-tool .launchbox-single-result > footer button {
+  min-height: var(--control-height);
+  border-radius: var(--control-radius);
+  font-size: var(--control-font-size);
+}
+
+.collection-tool .collection-reorder > div button,
+.collection-tool .collection-catalog-controls button {
+  min-height: var(--control-height-compact);
+  border-radius: var(--control-radius-compact);
+}
+
+.collection-tool .platform-select-list button {
+  min-height: var(--control-height-compact);
+  border-radius: var(--control-radius-compact);
+  font-size: var(--control-font-size);
+}
+
+.collection-tool .collection-toolbar input,
+.collection-tool .collection-form-grid input:not([type='checkbox']),
+.collection-tool .collection-form-grid select,
+.collection-tool .collection-columns input,
+.collection-tool .collection-columns select,
+.collection-tool .collection-catalog-controls input,
+.collection-tool .collection-catalog-controls select,
+.collection-tool .wishlist-add-source input {
+  min-height: var(--control-height);
+  border-radius: var(--control-radius);
+  font-size: var(--control-font-size);
+}

@@ -1,0 +1,90 @@
+.hijitos { width: 100%; display: grid; gap: 18px; color: var(--ink); }
+.eyebrow { color: var(--muted); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.notice { display: flex; justify-content: space-between; gap: 10px; padding: 10px 13px; border: 1px solid rgba(8,120,104,.25); border-radius: var(--control-radius); background: rgba(8,120,104,.07); font-size: var(--control-font-size); }
+.notice button { min-height: var(--control-height-compact); padding: 2px 7px; border: 0; background: transparent; color: var(--muted); font-size: var(--fs-lg); }
+.loading { padding: 40px 12px; color: var(--muted); text-align: center; }
+.mainBanner { height: 210px; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--canvas); }
+.mainBanner img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.bannerPlaceholder { height: 100%; display: grid; align-content: center; justify-items: center; gap: 8px; background: linear-gradient(120deg, rgba(41,215,192,.13), transparent); color: var(--teal); }
+.bannerPlaceholder span { font-size: 34px; }
+.bannerPlaceholder strong { font-size: var(--fs-base); }
+.bannerOverlay { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; flex-direction: column; gap: 7px; padding: 22px 28px; background: linear-gradient(90deg, rgba(11,25,44,.82), rgba(11,25,44,.22) 68%, transparent); color: #fff; }
+.bannerOverlay .eyebrow { color: #9ceade; }
+.bannerOverlay h2 { max-width: 520px; margin: 0 0 4px; font-size: var(--fs-2xl); line-height: 1.2; }
+.bannerOverlay .secondaryButton { min-height: var(--control-height-compact); border-color: #ffffff70; color: #fff; }
+.trackGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.track { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--canvas); }
+.trackBanner { height: 145px; position: relative; display: grid; place-items: center; overflow: hidden; background: rgba(93,193,185,.1); }
+.trackBanner img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.trackBanner > div { display: grid; justify-items: center; gap: 5px; color: var(--teal); }
+.trackBanner > div span { font-size: 30px; }
+.trackBanner > div strong { font-size: var(--fs-sm); }
+.trackBanner > button { position: absolute; top: 9px; right: 9px; min-height: var(--control-height-compact); padding: 5px 9px; border-color: #ffffff80; background: rgba(11,25,44,.62); color: #fff; font-size: var(--fs-xs); }
+.trackHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px 12px; }
+.trackHeading > div { min-width: 0; display: flex; align-items: center; gap: 10px; }
+.paw { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 9px; background: rgba(93,193,185,.12); color: var(--teal); }
+.trackHeading h2 { margin: 0; font-size: var(--fs-lg); }
+.trackHeading p { margin: 3px 0 0; color: var(--muted); font-size: var(--fs-xs); }
+.progress { width: 54px; height: 54px; flex: none; }
+.progressTrack { fill: none; stroke: var(--line); stroke-width: 7; }
+.progressValue { fill: none; stroke: var(--teal); stroke-width: 7; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.progress text { fill: var(--ink); font-size: 13px; font-weight: 700; }
+.trackBody { padding: 0 15px 15px; }
+.taskGroupHead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.taskGroupHead h3 { margin: 0; font-size: var(--fs-sm); }
+.textAction { min-height: var(--control-height-compact); padding: 5px 9px; border: 0; background: transparent; color: var(--teal); font-size: var(--fs-xs); }
+.primaryButton, .secondaryButton, .dangerButton { min-height: var(--control-height); display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border-radius: var(--control-radius); font-size: var(--control-font-size); font-weight: 650; }
+.primaryButton { border: 1px solid var(--primary-action-bg); background: var(--primary-action-bg); color: var(--primary-action-ink); }
+.primaryButton:hover { background: var(--primary-action-hover); }
+.secondaryButton { border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.dangerButton { border: 1px solid #b34535; background: transparent; color: #b34535; }
+.taskList { display: grid; padding: 0; margin: 0; list-style: none; }
+.taskRow { display: grid; grid-template-columns: 20px minmax(0,1fr) auto; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.taskRow > input { width: 16px; height: 16px; accent-color: var(--teal); }
+.taskSummary { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; padding: 0; border: 0; background: transparent; text-align: left; }
+.taskSummary:hover { background: transparent; }
+.taskSummary > span { flex: 1 1 100%; color: var(--ink); font-size: var(--fs-sm); font-weight: 550; }
+.taskSummary time, .taskSummary small { color: var(--muted); font-size: var(--fs-xs); }
+.overdue { color: #b34535 !important; }
+.priority { padding: 2px 6px; border-radius: 999px; font-size: var(--fs-2xs); font-weight: 700; }
+.priority_alto { background: rgba(179,69,53,.11); color: #b34535; }
+.priority_medio { background: rgba(183,132,39,.13); color: #96690d; }
+.priority_bajo { background: rgba(8,120,104,.1); color: var(--teal); }
+.taskActions { display: flex; gap: 4px; }
+.taskActions button { min-height: var(--control-height-compact); padding: 5px 8px; border-radius: var(--control-radius-compact); font-size: var(--fs-xs); }
+.taskActions .deleteIcon { width: var(--control-height-compact); padding: 0; color: #b34535; }
+.subtasks { grid-column: 2 / -1; display: grid; gap: 7px; padding: 9px 0 0; }
+.subtasks > p { margin: 0; color: var(--muted); font-size: var(--fs-xs); }
+.subtask { display: flex; align-items: center; gap: 8px; font-size: var(--fs-xs); }
+.subtask input { width: 15px; height: 15px; accent-color: var(--teal); }
+.subtask span { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.subtaskDone { color: var(--muted); text-decoration: line-through; }
+.subtask .deleteIcon { width: 28px; min-height: 28px; padding: 0; border: 0; background: transparent; color: var(--muted); }
+.subtaskForm { display: flex; gap: 7px; }
+.subtaskForm input { min-width: 0; flex: 1; min-height: var(--control-height-compact); padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--control-radius-compact); background: var(--canvas); color: var(--ink); font-size: var(--fs-xs); }
+.subtaskForm button { min-height: var(--control-height-compact); padding: 5px 9px; border-radius: var(--control-radius-compact); font-size: var(--fs-xs); }
+.emptyTasks { margin: 0; padding: 18px 8px; color: var(--muted); text-align: center; font-size: var(--fs-sm); }
+.completed { margin-top: 7px; }
+.completed > button { width: 100%; min-height: var(--control-height); display: flex; justify-content: space-between; padding: 8px 4px; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--muted); font-size: var(--fs-xs); }
+.completed .taskRow:last-child { border-bottom: 0; }
+.overlay { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; overflow: auto; padding: 20px; background: rgba(5,13,23,.48); backdrop-filter: blur(3px); }
+.dialog { width: min(560px, 100%); display: grid; gap: 13px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--canvas); color: var(--ink); box-shadow: 0 18px 60px #0004; }
+.dialog h2 { margin: 4px 0 0; font-size: var(--fs-xl); }
+.dialog label { min-width: 0; display: grid; gap: 5px; color: var(--muted); font-size: var(--fs-xs); font-weight: 650; }
+.dialog input:not([type='checkbox']), .dialog select { width: 100%; min-width: 0; min-height: var(--control-height); padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--control-radius); background: transparent; color: var(--ink); font-size: var(--control-font-size); }
+.dialogRow { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.dialog footer { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.dialog footer > span { flex: 1; }
+
+@media (max-width: 850px) { .trackGrid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .mainBanner { height: 180px; }
+  .bannerOverlay { padding: 15px; }
+  .bannerOverlay h2 { font-size: var(--fs-xl); }
+  .trackHeading { padding-inline: 11px; }
+  .trackBody { padding-inline: 11px; }
+  .taskActions button:not(.deleteIcon) { font-size: 0; width: var(--control-height-compact); padding: 0; }
+  .taskActions button:not(.deleteIcon)::before { content: '✎'; font-size: var(--fs-sm); }
+  .dialog { padding: 16px; }
+  .dialogRow { grid-template-columns: 1fr; }
+}
