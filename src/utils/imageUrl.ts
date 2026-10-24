@@ -7,7 +7,7 @@ export function imageUrlForDisplay(url: string): string {
     const fileId = parsed.pathname.match(/\/file\/d\/([^/]+)/)?.[1] ?? parsed.searchParams.get('id')
     if (!fileId) return url
 
-    return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(fileId)}`
+    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1600`
   } catch {
     return url
   }
