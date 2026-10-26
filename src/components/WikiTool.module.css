@@ -162,6 +162,7 @@
 .listView > .sectionHeading { margin: 7px 0 15px; }
 .listView > .sectionHeading h2 { margin: 5px 0 0; font-size: var(--fs-2xl); }
 .categoryBanner { min-height: 150px; position: relative; display: flex; align-items: center; justify-content: space-between; gap: 15px; overflow: hidden; margin-bottom: 24px; padding: 22px 26px; border-radius: 12px; background-color: #e8f4f2; background-position: center; background-size: cover; color: var(--ink); }
+:global([data-theme='dark']) .categoryBanner { background-color: #16302c; }
 .categoryBanner > div:first-child { position: relative; z-index: 1; }
 .categoryBanner > div:first-child > span { font-size: 26px; }
 .categoryBanner h2 { margin: 5px 0 0; font-size: var(--fs-2xl); }
