@@ -1,10 +1,12 @@
 .sidebar { width: 240px; position: fixed; inset: 0 auto 0 0; display: flex; flex-direction: column; z-index: 10; padding: 32px 20px 20px; background: var(--navy); color: #aabaca; }
 .brandRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 6px; }
-.brand { min-width: 0; display: inline-flex; align-items: center; flex-shrink: 0; }
-.brandIcon { width: 34px; height: 34px; display: block; }
-.brandMark, .brandCopy, .navLabel { display: none; }
-.addTask { min-height: var(--control-height); display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; padding: 8px 10px; border: 0; border-radius: var(--control-radius); background: var(--primary-action-bg); color: var(--primary-action-ink); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
-.addTask svg { width: 16px; height: 16px; }
+.brand { min-width: 0; display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; color: #f1f7f7; }
+.brandMark { width: 34px; height: 34px; display: grid; flex: none; place-items: center; border-radius: 9px; background: #46e0c3; color: #062522; font-size: 21px; font-weight: 700; }
+.brandCopy { min-width: 0; display: block; font-size: 14px; font-weight: 650; line-height: 1.15; letter-spacing: -.03em; white-space: nowrap; }
+.brandCopy small { display: block; margin-top: 4px; color: #a8bbca; font-size: 9px; font-weight: 500; letter-spacing: .06em; }
+.navLabel { display: none; }
+.addTask { width: 34px; min-width: 34px; height: 34px; min-height: 34px; display: grid; place-items: center; flex: none; padding: 0; border: 0; border-radius: 8px; background: var(--primary-action-bg); color: var(--primary-action-ink); }
+.addTask svg { width: 17px; height: 17px; }
 .nav { display: flex; flex-direction: column; gap: 6px; margin-top: 36px; }
 .navLink { min-height: var(--control-height); display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--control-radius-compact); color: #aabaca; font-size: var(--fs-base); }
 .navLink:hover { background: #1b2a40; color: #fff; }
@@ -23,8 +25,8 @@
 .homeSidebar { width: 236px; padding: 28px 16px 26px; border-right: 1px solid #293c4c; background: #0c1725; color: #b2c5d0; }
 .homeSidebar .brandRow { justify-content: flex-start; padding: 0 8px; }
 .homeSidebar .brand { gap: 11px; color: #f1f7f7; text-decoration: none; }
-.homeSidebar .brandMark { width: 36px; height: 36px; display: grid; flex: none; place-items: center; border-radius: 9px; background: #46e0c3; color: #062522; font-size: 22px; font-weight: 700; }
-.homeSidebar .brandCopy { display: block; font-size: 16px; font-weight: 650; line-height: 1.15; letter-spacing: -.03em; white-space: nowrap; }
+.homeSidebar .brandMark { width: 36px; height: 36px; font-size: 22px; }
+.homeSidebar .brandCopy { font-size: 16px; }
 .homeSidebar .brandCopy small { display: block; margin-top: 4px; color: #a8bbca; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
 .homeSidebar .addTask, .homeSidebar .profile { display: none; }
 .homeSidebar .navLabel { display: block; margin: 28px 12px 8px; color: #93aeb8; font-size: 10px; font-weight: 600; letter-spacing: .12em; }

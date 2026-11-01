@@ -1,5 +1,4 @@
 import styles from './Sidebar.module.css'
-import brandIcon from '../assets/chucks-web-icon.svg'
 
 export type NavKey = 'home' | 'tasks' | 'hijitos' | 'accounts' | 'calendar' | 'weight' | 'collection' | 'wiki' | 'shopping' | 'sites'
 
@@ -44,9 +43,10 @@ export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAdd
     <aside className={`${styles.sidebar} ${isHome ? styles.homeSidebar : ''} ${open ? styles.open : ''}`} id="sidebar" aria-label="Navegación principal">
       <div className={styles.brandRow}>
         <a className={styles.brand} href="#" aria-label="CHUCK's Web, inicio" onClick={handleBrandClick}>
-          {isHome ? <><span className={styles.brandMark} aria-hidden="true">C</span><span className={styles.brandCopy}>CHUCK’s Web<small>ESPACIO PERSONAL</small></span></> : <img src={brandIcon} alt="" className={styles.brandIcon} />}
+          <span className={styles.brandMark} aria-hidden="true">C</span>
+          <span className={styles.brandCopy}>CHUCK’s Web<small>ESPACIO PERSONAL</small></span>
         </a>
-        {!isHome && <button className={styles.addTask} onClick={onAddTask}><svg><use href="#icon-plus" /></svg>Agregar tarea</button>}
+        {!isHome && <button className={styles.addTask} type="button" onClick={onAddTask} aria-label="Agregar tarea" title="Agregar tarea"><svg><use href="#icon-plus" /></svg></button>}
       </div>
 
       {isHome && <span className={styles.navLabel}>TU ESPACIO</span>}
