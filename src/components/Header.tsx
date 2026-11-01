@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styles from './Header.module.css'
 import { ThemeToggle } from './ThemeToggle'
 import type { NavKey } from './Sidebar'
@@ -11,6 +12,7 @@ interface HeaderProps {
 }
 
 export function Header({ active, onToggleMenu, menuOpen, onShowNotifications, onLogout }: HeaderProps) {
+  const [profileOpen, setProfileOpen] = useState(false)
   const getCrumb = () => {
     switch (active) {
       case 'tasks':
@@ -56,20 +58,15 @@ export function Header({ active, onToggleMenu, menuOpen, onShowNotifications, on
         <strong>{getCrumb()}</strong>
       </div>
       <div className={styles.headerRight}>
-        <ThemeToggle />
-        <button
-          className={styles.notification}
-          aria-label="Ver notificaciones"
-          onClick={onShowNotifications}
-        >
-          <svg>
-            <use href="#icon-bell" />
-          </svg>
-        </button>
-        <span className={styles.avatar} aria-label="Cuenta personal">
+        <span className={styles.demoBadge}>PROTOTIPO</span>
+        <button className={styles.avatarButton} type="button" aria-label="Abrir menú de cuenta" aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}>
           TU
-        </span>
-        <button className={styles.logout} type="button" onClick={onLogout}>Salir</button>
+        </button>
+        {profileOpen && <div className={styles.profileMenu}>
+          <ThemeToggle />
+          <button type="button" onClick={() => { onShowNotifications(); setProfileOpen(false) }}>Notificaciones</button>
+          <button type="button" className={styles.logout} onClick={() => { setProfileOpen(false); onLogout() }}>Salir</button>
+        </div>}
       </div>
     </header>
   )

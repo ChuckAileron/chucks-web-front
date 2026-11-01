@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import styles from './Hero.module.css'
 import bannerImg from '../assets/banner.jpg'
 import type { NavKey } from './Sidebar'
@@ -15,24 +14,11 @@ const quickLinks: { key: NavKey; label: string; description: string; icon: strin
   { key: 'calendar', label: 'Calendario', description: 'Tus próximos días', icon: '#icon-calendar' },
   { key: 'collection', label: 'Colección', description: 'Tus favoritos', icon: '#icon-collection' },
   { key: 'shopping', label: 'Lista de compras', description: 'No olvides nada', icon: '#icon-cart' },
-  { key: 'sites', label: 'Sitios de interés', description: 'Páginas que te inspiran', icon: '#icon-globe' },
   { key: 'weight', label: 'Control de peso', description: 'Sigue tu progreso', icon: '#icon-scale' },
   { key: 'wiki', label: 'Wiki', description: 'Ideas y notas', icon: '#icon-book' },
 ]
 
 export function Hero({ active, onNavigate }: HeroProps) {
-  const [today] = useState(() => {
-    const now = new Date()
-    return {
-      label: new Intl.DateTimeFormat('es-CL', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-      }).format(now),
-      value: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
-    }
-  })
-
   return <section className={styles.home}>
     <header className={styles.welcomeHeader}>
       <div>
@@ -40,7 +26,7 @@ export function Hero({ active, onNavigate }: HeroProps) {
         <h1>Hola, Chuck <span aria-hidden="true">👋</span></h1>
         <p>Todo lo que importa, en un solo lugar.</p>
       </div>
-      <time className={styles.dateTag} dateTime={today.value}>{today.label}</time>
+      <span className={styles.dateTag}>TU VISTA GENERAL</span>
     </header>
 
     <section className={styles.welcomeHero} aria-label="Bienvenido a CHUCK's Web">

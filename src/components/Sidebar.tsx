@@ -1,5 +1,4 @@
 import styles from './Sidebar.module.css'
-import brandIcon from '../assets/chucks-web-icon.svg'
 
 export type NavKey = 'home' | 'tasks' | 'hijitos' | 'accounts' | 'calendar' | 'weight' | 'collection' | 'wiki' | 'shopping' | 'sites'
 
@@ -16,10 +15,9 @@ interface SidebarProps {
   pendingCount: number
   open: boolean
   onClose: () => void
-  onAddTask: () => void
 }
 
-export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAddTask }: SidebarProps) {
+export function Sidebar({ active, onNavigate, pendingCount, open, onClose }: SidebarProps) {
   const navItems: NavItem[] = [
     { key: 'home', label: 'Vista general', icon: '#icon-grid' },
     { key: 'tasks', label: 'Mis tareas', icon: '#icon-check', count: pendingCount },
@@ -43,16 +41,12 @@ export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAdd
     <aside className={`${styles.sidebar} ${open ? styles.open : ''}`} id="sidebar" aria-label="Navegación principal">
       <div className={styles.brandRow}>
         <a className={styles.brand} href="#" aria-label="CHUCK's Web, inicio" onClick={handleBrandClick}>
-          <img src={brandIcon} alt="" className={styles.brandIcon} />
+          <span className={styles.brandMark} aria-hidden="true">C</span>
+          <span className={styles.brandCopy}>CHUCK’s Web<small>ESPACIO PERSONAL</small></span>
         </a>
-        <button className={styles.addTask} onClick={onAddTask}>
-          <svg>
-            <use href="#icon-plus" />
-          </svg>
-          Agregar tarea
-        </button>
       </div>
 
+      <span className={styles.navLabel}>TU ESPACIO</span>
       <nav className={styles.nav}>
         {navItems.map((item) => (
           <a
@@ -79,29 +73,6 @@ export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAdd
         <div className={styles.help}>
           <strong>Un espacio para tus ideas.</strong>
           <p>Menos ruido. Más enfoque.</p>
-          <a
-            href="#tasks"
-            onClick={(e) => {
-              e.preventDefault()
-              onNavigate('tasks')
-              onClose()
-            }}
-          >
-            Explora tus tareas
-            <svg>
-              <use href="#icon-arrow" />
-            </svg>
-          </a>
-        </div>
-        <div className={styles.profile}>
-          <span className={styles.avatar}>TU</span>
-          <div>
-            Tu workspace
-            <small>Cuenta personal</small>
-          </div>
-          <svg>
-            <use href="#icon-settings" />
-          </svg>
         </div>
       </div>
     </aside>

@@ -13,9 +13,10 @@ interface TaskItemProps {
   onToggle: (id: string) => void
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
+  showActions?: boolean
 }
 
-export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onEdit, onDelete, showActions = true }: TaskItemProps) {
   return (
     <div className={styles.task}>
       <input
@@ -29,7 +30,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
       </label>
       <span className={styles.tag}>{task.project}</span>
       <time>{task.due}</time>
-      <div className={styles.actions}>
+      {showActions && <div className={styles.actions}>
         <button
           type="button"
           className={styles.editBtn}
@@ -50,7 +51,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
             <use href="#icon-trash" />
           </svg>
         </button>
-      </div>
+      </div>}
     </div>
   )
 }

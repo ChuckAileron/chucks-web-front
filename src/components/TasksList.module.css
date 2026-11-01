@@ -18,6 +18,11 @@
   letter-spacing: -0.5px;
 }
 
+.homeTasks .sectionHead { margin-bottom: 2px; }
+.homeTasks .headInfo { display: block; }
+.homeTasks .sectionHead h2 { font-size: var(--fs-2xl); letter-spacing: -.03em; }
+.homeTasks .pendingCount { display: block; margin-top: 3px; font-size: var(--fs-sm); }
+
 .contextTabs {
   margin: -3px 0 4px;
 }
@@ -82,7 +87,7 @@
 }
 
 .taskList {
-  background: #fff;
+  background: var(--canvas);
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
@@ -109,9 +114,11 @@
 }
 
 :global([data-theme='dark']) .taskList {
-  background: #122136;
-  border-color: #34465a;
+  background: #111e2e;
+  border-color: #293c4c;
 }
+
+:global([data-theme='dark']) .homeTasks .sectionHead h2 { color: #f1f7f7; }
 
 @media (max-width: 520px) {
   .contextManager { padding: 16px; }

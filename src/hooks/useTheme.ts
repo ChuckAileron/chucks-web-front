@@ -13,10 +13,7 @@ export function useTheme() {
     if (stored === 'light' || stored === 'dark') {
       return stored
     }
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark'
-    }
-    return 'light'
+    return 'dark'
   })
 
   const [manualTheme, setManualTheme] = useState<boolean>(() => {

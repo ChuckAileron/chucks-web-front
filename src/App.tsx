@@ -217,7 +217,6 @@ function App() {
         pendingCount={pendingCount}
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        onAddTask={handleOpenAddTask}
       />
       <div className={styles.shell}>
         <Header
@@ -254,7 +253,8 @@ function App() {
           {activeNav === 'shopping' && <ShoppingWishlistTool />}
           {activeNav === 'sites' && <SitesOfInterestTool />}
           <footer className={styles.footer}>
-            <span>CHUCK's Web © 2026 · Prototipo con datos de ejemplo</span>
+            <span>CHUCK’s Web · Tu espacio personal</span>
+            <span>Prototipo visual con datos de ejemplo</span>
           </footer>
         </main>
       </div>

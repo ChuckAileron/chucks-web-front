@@ -45,10 +45,10 @@
 }
 
 .welcomeHero {
-  min-height: 250px;
+  min-height: 246px;
   overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(250px, .9fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(250px, 1fr);
   border: 1px solid color-mix(in srgb, var(--teal) 24%, var(--line));
   border-radius: 18px;
   background: linear-gradient(115deg, color-mix(in srgb, var(--teal) 11%, var(--canvas)), var(--canvas) 70%);
@@ -103,10 +103,10 @@
 }
 
 .heroVisual {
-  min-height: 250px;
+  min-height: 246px;
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: 84% center;
+  background-position: right center;
   mask-image: linear-gradient(90deg, transparent 0%, #000 16%);
 }
 
@@ -187,7 +187,7 @@
 @media (max-width: 800px) {
   .home { gap: 24px; }
   .welcomeHero { min-height: 225px; grid-template-columns: minmax(0, 1.2fr) minmax(180px, .8fr); }
-  .heroVisual { min-height: 225px; background-position: 82% center; }
+  .heroVisual { min-height: 225px; background-position: right center; }
 }
 
 @media (max-width: 600px) {
@@ -197,7 +197,7 @@
   .welcomeHero { min-height: 0; grid-template-columns: 1fr; position: relative; }
   .heroContent { min-height: 238px; padding: 27px 23px; }
   .heroContent p { max-width: 250px; }
-  .heroVisual { position: absolute; inset: 0 0 0 auto; width: 52%; height: 100%; min-height: 0; opacity: .38; background-position: 87% center; mask-image: linear-gradient(90deg, transparent 0%, #000 45%); }
+  .heroVisual { position: absolute; inset: 0 0 0 auto; width: 52%; height: 100%; min-height: 0; opacity: .38; background-position: right center; mask-image: linear-gradient(90deg, transparent 0%, #000 45%); }
   .quickNav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .quickNavItem { min-height: 76px; grid-template-columns: 36px minmax(0, 1fr); gap: 9px; padding: 10px; }
   .iconBox { width: 36px; height: 36px; border-radius: 9px; }

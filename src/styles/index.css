@@ -182,11 +182,14 @@ svg {
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --canvas: #0f1319;
-  --ink: #EEF4FA;
-  --muted: #ADBDCE;
-  --line: #34465A;
-  --teal: #6DE5D3;
+  --canvas: #0a111c;
+  --ink: #f1f7f7;
+  --muted: #a8bbca;
+  --line: #293c4c;
+  --teal: #46e0c3;
+  --primary-action-bg: #46e0c3;
+  --primary-action-ink: #062522;
+  --primary-action-hover: #63ead1;
 }
 
 :root[data-theme='dark'] dialog {

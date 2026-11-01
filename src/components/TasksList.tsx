@@ -40,11 +40,11 @@ export function TasksList({
   const contextFilterActive = showContextTabs && activeContext !== '*'
   const visibleTasks = contextFilterActive
     ? tasks.filter((task) => task.project === activeContext)
-    : tasks
+    : showContextTabs ? tasks : tasks.filter((task) => !task.completed)
   const pendingCount = visibleTasks.filter((task) => !task.completed).length
 
   return (
-    <section className={styles.bottom} id="tareas">
+    <section className={`${styles.bottom} ${!showContextTabs ? styles.homeTasks : ''}`} id="tareas">
       {showContextTabs && <SectionHeading eyebrow="ORGANIZA TU TRABAJO" title="Mis tareas" description="Tareas, fechas y contextos en un solo lugar." />}
       {showContextTabs && <nav className={`${styles.contextTabs} app-tabs`} aria-label="Filtrar tareas por contexto">
         <button type="button" className={activeContext === '*' ? 'active' : ''} onClick={() => onSelectContext('*')}>Todas <b>{tasks.length}</b></button>
@@ -56,7 +56,9 @@ export function TasksList({
         <div className={styles.headInfo}>
           <h2>{showContextTabs && activeContext !== '*' ? activeContext : showContextTabs ? 'Todas las tareas' : 'Tareas pendientes'}</h2>
           <span className={styles.pendingCount}>
-            {pendingCount} pendiente{pendingCount !== 1 ? 's' : ''}
+            {showContextTabs
+              ? `${pendingCount} pendiente${pendingCount !== 1 ? 's' : ''}`
+              : `${pendingCount} pendiente${pendingCount !== 1 ? 's' : ''} · Un paso a la vez`}
           </span>
         </div>
         <button type="button" className={styles.addButton} onClick={onAddTask}>
@@ -75,6 +77,7 @@ export function TasksList({
             onToggle={onToggleTask}
             onEdit={onEditTask}
             onDelete={onDeleteTask}
+            showActions={showContextTabs}
           />
         ))}
       </div>
