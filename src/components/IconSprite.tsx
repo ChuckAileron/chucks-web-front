@@ -88,6 +88,10 @@ export function IconSprite() {
           <circle cx="9.5" cy="19.5" r="1.5" />
           <circle cx="17.5" cy="19.5" r="1.5" />
         </symbol>
+        <symbol id="icon-globe" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3a15 15 0 0 1 0 18m0-18a15 15 0 0 0 0 18" />
+        </symbol>
         <symbol id="icon-pencil" viewBox="0 0 24 24">
           <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z" />
           <path d="m13.5 6.5 4 4" />

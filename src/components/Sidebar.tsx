@@ -1,7 +1,7 @@
 import styles from './Sidebar.module.css'
 import brandIcon from '../assets/chucks-web-icon.svg'
 
-export type NavKey = 'home' | 'tasks' | 'hijitos' | 'accounts' | 'calendar' | 'weight' | 'collection' | 'wiki' | 'shopping'
+export type NavKey = 'home' | 'tasks' | 'hijitos' | 'accounts' | 'calendar' | 'weight' | 'collection' | 'wiki' | 'shopping' | 'sites'
 
 interface NavItem {
   key: NavKey
@@ -28,6 +28,7 @@ export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAdd
     { key: 'calendar', label: 'Calendario', icon: '#icon-calendar' },
     { key: 'collection', label: 'Colección', icon: '#icon-collection' },
     { key: 'shopping', label: 'Lista de compras', icon: '#icon-cart' },
+    { key: 'sites', label: 'Sitios de interés', icon: '#icon-globe' },
     { key: 'weight', label: 'Control de peso', icon: '#icon-scale' },
     { key: 'wiki', label: 'Wiki', icon: '#icon-book' },
   ]

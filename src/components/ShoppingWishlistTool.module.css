@@ -45,6 +45,9 @@
 .priceBlock strong { font-size: var(--fs-lg); }
 .priceBlock small { color: var(--muted); font-size: var(--fs-xs); }
 .priceBlock .error { color: #b34535; }
+.removeItemButton { min-height: var(--control-height-compact); margin-top: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: var(--control-radius); background: transparent; color: #b34535; font-size: var(--fs-xs); font-weight: 650; }
+.removeItemButton:hover { border-color: #b34535; background: rgba(179,69,53,.08); }
+.removeItemButton:disabled { opacity: .5; cursor: not-allowed; }
 .empty { display: grid; justify-items: center; gap: 9px; padding: 44px 20px; border: 1px dashed var(--line); border-radius: 11px; text-align: center; }
 .empty > span { font-size: 32px; }
 .empty strong { font-size: var(--fs-base); }

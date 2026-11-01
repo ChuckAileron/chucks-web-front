@@ -11,11 +11,14 @@ import type { TaskInput } from './components/TaskModal'
 import CollectionTool from './components/collection/CollectionTool'
 import WikiTool from './components/WikiTool'
 import ShoppingWishlistTool from './components/ShoppingWishlistTool'
+import SitesOfInterestTool from './components/SitesOfInterestTool'
 import HijitosTool from './components/HijitosTool'
 import CuentasTool from './components/CuentasTool'
 import CalendarioTool from './components/CalendarioTool'
 import ControlPesoTool from './components/ControlPesoTool'
 import { IconSprite } from './components/IconSprite'
+import { Login } from './components/Login'
+import { validateSession } from './api/auth'
 import type { Project } from './components/ProjectCard'
 import type { Task } from './components/TaskItem'
 import './styles/index.css'
@@ -49,6 +52,8 @@ const notificationProject: Project = {
 }
 
 function App() {
+  const [authToken, setAuthToken] = useState(() => new URLSearchParams(window.location.hash.slice(1)).has('resetPassword') ? null : sessionStorage.getItem('chucks.auth-token'))
+  const [checkingSession, setCheckingSession] = useState(Boolean(authToken))
   const [activeNav, setActiveNav] = useState<NavKey>('home')
   const [menuOpen, setMenuOpen] = useState(false)
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
@@ -57,6 +62,21 @@ function App() {
   const [notifOpen, setNotifOpen] = useState(false)
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+
+  useEffect(() => {
+    const expireSession = () => {
+      sessionStorage.removeItem('chucks.auth-token')
+      setAuthToken(null)
+      setCheckingSession(false)
+    }
+    window.addEventListener('chucks:session-expired', expireSession)
+    if (authToken) {
+      void validateSession()
+        .catch(expireSession)
+        .finally(() => setCheckingSession(false))
+    }
+    return () => window.removeEventListener('chucks:session-expired', expireSession)
+  }, [authToken])
 
   const pendingCount = tasks.filter((t) => !t.completed).length
 
@@ -171,6 +191,22 @@ function App() {
     setEditingTask(null)
   }
 
+  const handleAuthenticated = (token: string) => {
+    sessionStorage.setItem('chucks.auth-token', token)
+    setAuthToken(token)
+    setCheckingSession(false)
+  }
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('chucks.auth-token')
+    setAuthToken(null)
+  }
+
+  if (checkingSession) {
+    return <div className={styles.authLoading} role="status">Validando sesión…</div>
+  }
+  if (!authToken) return <Login onAuthenticated={handleAuthenticated} />
+
   return (
     <>
       <IconSprite />
@@ -189,6 +225,7 @@ function App() {
           onToggleMenu={() => setMenuOpen((o) => !o)}
           menuOpen={menuOpen}
           onShowNotifications={() => setNotifOpen(true)}
+          onLogout={handleLogout}
         />
         <main className={styles.main} id="inicio">
           {activeNav === 'home' && <Hero active={activeNav} onNavigate={setActiveNav} />}
@@ -215,6 +252,7 @@ function App() {
           {activeNav === 'weight' && <ControlPesoTool />}
           {activeNav === 'wiki' && <WikiTool />}
           {activeNav === 'shopping' && <ShoppingWishlistTool />}
+          {activeNav === 'sites' && <SitesOfInterestTool />}
           <footer className={styles.footer}>
             <span>CHUCK's Web © 2026 · Prototipo con datos de ejemplo</span>
           </footer>

@@ -4,7 +4,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 
-Panel personal **CHUCK's Web**: una suite de herramientas en español para el día a día — tareas, seguimiento de los peques ("Hijitos"), cuentas y movimientos, calendario con festivos, control de peso, colecciones personalizadas, wiki personal y lista de compras con seguimiento de precios.
+Panel personal **CHUCK's Web**: una suite de herramientas en español para el día a día — tareas, seguimiento de los peques ("Hijitos"), cuentas y movimientos, calendario con festivos, control de peso, colecciones personalizadas, wiki personal, lista de compras con seguimiento de precios y sitios de interés con capturas web. La primera pantalla requiere iniciar sesión; solo se permite registrar una cuenta.
 
 Este repositorio contiene **solo la capa de presentación**. Todos los datos viven en el backend y se consumen a través del BFF.
 
@@ -24,6 +24,7 @@ La navegación es un estado interno en `src/App.tsx` (sin router):
 | Colección | Colecciones genéricas con columnas definidas por el usuario, items, tags e importación desde LaunchBox/CSV |
 | Wiki | Páginas de documentación con categorías, jerarquía y resaltado de sintaxis |
 | Lista de Compras | Wishlist con scraping de precios, contextos de compra y refresh de links |
+| Sitios de interés | Páginas web agrupadas por contexto con capturas de pantalla |
 
 ## Stack
 
@@ -78,6 +79,8 @@ La app queda en **http://localhost:5177** (puerto fijo, `strictPort: true`).
 |---|---|---|
 | `VITE_BFF_URL` | `http://localhost:3000` | URL base del BFF — ver `src/api/http.ts` |
 
+El token de sesión se conserva en `sessionStorage` y se valida al abrir la aplicación. Configura `AUTH_SECRET` en el backend y el mismo `INTERNAL_API_KEY` en backend y BFF antes de iniciar los servicios. La pantalla de acceso permite solicitar por correo un enlace de recuperación de contraseña, válido por una hora y de un solo uso; requiere configurar Resend en el backend.
+
 Los archivos `*.local` están en `.gitignore`; usa `.env.local` para tu configuración.
 
 ## Estructura
@@ -89,13 +92,13 @@ src/
 ├── api/                      # Capa de acceso a datos (una función por dominio)
 │   ├── http.ts               # Cliente fetch central (requestJson + BFF_URL)
 │   ├── accounts.ts  calendar.ts  collections.ts  hijitos.ts
-│   ├── images.ts    launchbox.ts  shopping.ts     weight.ts
+│   ├── images.ts    launchbox.ts  shopping.ts     sites.ts  weight.ts
 │   └── wiki.ts      wishlist.ts
 ├── components/
 │   ├── Sidebar.tsx  Header.tsx  Hero.tsx  ThemeToggle.tsx  ...
 │   ├── TasksList/TaskItem/TaskModal, ProjectCard/ProjectModal
 │   ├── HijitosTool  CuentasTool  CalendarioTool  ControlPesoTool
-│   ├── WikiTool  ShoppingWishlistTool
+│   ├── WikiTool  ShoppingWishlistTool  SitesOfInterestTool
 │   └── collection/           # Suite de colecciones (editor, items, LaunchBox, wishlist)
 ├── hooks/useTheme.ts         # Tema claro/oscuro
 ├── styles/                   # index.css + collection-suite.css
@@ -110,15 +113,16 @@ Cada componente lleva su `*.module.css` hermano.
 
 Todas las llamadas pasan por `requestJson()` en `src/api/http.ts`, que construye `${BFF_URL}${path}` y normaliza los errores desde el campo `message` del JSON. Los prefijos consumidos:
 
-`/tasks`, `/accounts`, `/calendar`, `/collections`, `/hijitos`, `/images/search`, `/launchbox/*`, `/shopping/*`, `/weight`, `/wiki/*`, `/wishlist`
+`/tasks`, `/accounts`, `/calendar`, `/collections`, `/hijitos`, `/images/search`, `/launchbox/*`, `/shopping/*`, `/sites/*`, `/weight`, `/wiki/*`, `/wishlist`
 
 No hay proxy de Vite configurado: en desarrollo hay que levantar el BFF aparte (el BFF ya tiene CORS habilitado para `localhost:5177`).
 
 ## Persistencia local
 
-Solo preferencias de UI en `localStorage`:
+Preferencias de UI en `localStorage` y sesión temporal en `sessionStorage`:
 
 - `marea-theme` — tema claro/oscuro
+- `chucks.auth-token` — token de acceso (se elimina al cerrar sesión o caducar)
 - `chucks.collection.catalog-view` / `chucks.collection.catalog-sort` — vista y orden del catálogo de colecciones
 
 El resto de datos (tareas, colecciones, wiki, precios…) viven en el backend.

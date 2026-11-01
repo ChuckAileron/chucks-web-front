@@ -7,9 +7,10 @@ interface HeaderProps {
   onToggleMenu: () => void
   menuOpen: boolean
   onShowNotifications: () => void
+  onLogout: () => void
 }
 
-export function Header({ active, onToggleMenu, menuOpen, onShowNotifications }: HeaderProps) {
+export function Header({ active, onToggleMenu, menuOpen, onShowNotifications, onLogout }: HeaderProps) {
   const getCrumb = () => {
     switch (active) {
       case 'tasks':
@@ -28,6 +29,8 @@ export function Header({ active, onToggleMenu, menuOpen, onShowNotifications }: 
         return 'Wiki'
       case 'shopping':
         return 'Lista de Compras'
+      case 'sites':
+        return 'Sitios de interés'
       default:
         return 'Vista general'
     }
@@ -66,6 +69,7 @@ export function Header({ active, onToggleMenu, menuOpen, onShowNotifications }: 
         <span className={styles.avatar} aria-label="Cuenta personal">
           TU
         </span>
+        <button className={styles.logout} type="button" onClick={onLogout}>Salir</button>
       </div>
     </header>
   )

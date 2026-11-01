@@ -78,13 +78,50 @@ export default function CalendarioTool() {
     setMessage(`Feriados actualizados: ${result.total} para ${result.year}.`)
   })
 
+  const exportGoogleCalendar = () => {
+    if (!events.length) {
+      setMessage(`No hay eventos para exportar en ${year}.`)
+      return
+    }
+    const calendar = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//CHUCKs Web//Calendario//ES',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      ...events.flatMap((event) => {
+        const description = [event.label, event.description].filter(Boolean).join('\n\n')
+        const lines = [
+          'BEGIN:VEVENT',
+          `UID:chucks-calendar-${event.id}@chucks-web`,
+          `DTSTAMP:${toIcsUtc(new Date())}`,
+          `SUMMARY:${escapeIcs(event.title)}`,
+          `DTSTART${event.allDay ? ';VALUE=DATE' : ''}:${event.allDay ? event.startDate.replaceAll('-', '') : toIcsLocal(event.startDate, event.startTime || '00:00')}`,
+          `DTEND${event.allDay ? ';VALUE=DATE' : ''}:${event.allDay ? nextDate(event.endDate) : toIcsLocal(event.endDate, event.endTime || addMinutes(event.startTime || '00:00', 60))}`,
+          ...(description ? [`DESCRIPTION:${escapeIcs(description)}`] : []),
+          'END:VEVENT',
+        ]
+        return lines
+      }),
+      'END:VCALENDAR',
+    ].join('\r\n') + '\r\n'
+    const file = new Blob([calendar], { type: 'text/calendar;charset=utf-8' })
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `calendario-${year}.ics`
+    link.click()
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+    setMessage(`Se descargó el calendario de ${year}. Importa el archivo .ics en Google Calendar.`)
+  }
+
   const daysEvents = (day: string) => events.filter((event) => event.startDate <= day && event.endDate >= day).sort((a, b) => Number(a.allDay) === Number(b.allDay) ? (a.startTime ?? '').localeCompare(b.startTime ?? '') : a.allDay ? -1 : 1)
   const years = Array.from({ length: Math.max(8, CURRENT_YEAR - 1999 + 2) }, (_, index) => CURRENT_YEAR + 1 - index).filter((value) => value >= 2000)
 
   return <section className={styles.calendar}>
     <SectionHeading eyebrow="PLANIFICA TU TIEMPO" title="Calendario" description="Eventos, fechas importantes y recordatorios en una vista anual." status="PostgreSQL local" />
     {message && <div className={styles.notice} role="status"><span>{message}</span><button onClick={() => setMessage('')} aria-label="Cerrar">×</button></div>}
-    <div className={styles.yearBar}><button className={styles.secondaryButton} disabled={year <= 2000} onClick={() => setYear((value) => value - 1)} aria-label="Año anterior">‹</button><label><span>Año</span><select value={year} onChange={(event) => setYear(Number(event.target.value))}>{years.map((value) => <option key={value} value={value}>{value}</option>)}</select></label><button className={styles.secondaryButton} disabled={year >= CURRENT_YEAR + 1} onClick={() => setYear((value) => value + 1)} aria-label="Año siguiente">›</button><button className={styles.secondaryButton} disabled={busy} onClick={updateHolidays}>{busy ? 'Actualizando…' : 'Actualizar feriados de Chile'}</button></div>
+    <div className={styles.yearBar}><button className={styles.secondaryButton} disabled={year <= 2000} onClick={() => setYear((value) => value - 1)} aria-label="Año anterior">‹</button><label><span>Año</span><select value={year} onChange={(event) => setYear(Number(event.target.value))}>{years.map((value) => <option key={value} value={value}>{value}</option>)}</select></label><button className={styles.secondaryButton} disabled={year >= CURRENT_YEAR + 1} onClick={() => setYear((value) => value + 1)} aria-label="Año siguiente">›</button><button className={styles.secondaryButton} disabled={busy} onClick={updateHolidays}>{busy ? 'Actualizando…' : 'Actualizar feriados de Chile'}</button><button className={styles.googleButton} onClick={exportGoogleCalendar}>Exportar a Google Calendar</button></div>
     <div className={styles.monthGrid}>{MONTHS.map((_, index) => <Month key={`${year}-${index}`} year={year} month={index + 1} events={events} onSelectDay={openDay} />)}</div>
 
     {selectedDay && <div className={styles.overlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedDay(null) }}><section className={styles.dayDialog} role="dialog" aria-modal="true" aria-labelledby="calendar-day-title"><header><div><span className={styles.eyebrow}>AGENDA DEL DÍA</span><h2 id="calendar-day-title">{selectedDayLabel}</h2></div><button className={styles.closeButton} onClick={() => setSelectedDay(null)} aria-label="Cerrar">×</button></header><button className={styles.primaryButton} onClick={() => newEvent(selectedDay)}>＋ Nuevo evento</button><div className={styles.dayAgenda}>{daysEvents(selectedDay).map((event) => <button key={event.id} className={`${styles.agendaEvent} ${styles[`color_${event.color}`]}`} onClick={() => editEvent(event)}><strong>{event.isHoliday && '⚑ '}{event.title}</strong><span>{event.allDay ? 'Todo el día' : `${event.startTime || ''}${event.endTime ? ` – ${event.endTime}` : ''}`}</span></button>)}{!daysEvents(selectedDay).length && <p>Sin eventos para este día.</p>}</div></section></div>}
@@ -115,3 +152,16 @@ function ImageUrlField({ value, onChange }: { value: string[]; onChange: (images
 function colorName(color: string) { return ({ teal: 'Turquesa', azul: 'Azul', naranja: 'Naranja', rojo: 'Rojo', verde: 'Verde', morado: 'Morado', amarillo: 'Amarillo' })[color] ?? color }
 function localToday() { return TODAY_ISO }
 function errorText(error: unknown) { return error instanceof Error ? error.message : String(error) }
+function escapeIcs(value: string) { return value.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;') }
+function toIcsUtc(date: Date) { return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '') }
+function toIcsLocal(date: string, time: string) { return `${date.replaceAll('-', '')}T${time.replace(':', '')}00` }
+function nextDate(value: string) {
+  const [year, month, day] = value.split('-').map(Number)
+  const date = new Date(Date.UTC(year, month - 1, day + 1))
+  return `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`
+}
+function addMinutes(value: string, amount: number) {
+  const [hours, minutes] = value.split(':').map(Number)
+  const total = (hours * 60 + minutes + amount) % (24 * 60)
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}

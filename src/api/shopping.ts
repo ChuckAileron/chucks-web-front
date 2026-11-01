@@ -34,6 +34,8 @@ export const createShopContext = (name: string) =>
 export const deleteShopContext = (id: number) => requestVoid(`/shopping/contexts/${id}`, { method: 'DELETE' })
 export const fetchShopItems = (contextId: number, sort: ShopSort) =>
   requestJson<ShopItem[]>(`/shopping/contexts/${contextId}/items?sort=${encodeURIComponent(sort)}`)
+export const deleteShopItem = (contextId: number, itemId: number) =>
+  requestVoid(`/shopping/contexts/${contextId}/items/${itemId}`, { method: 'DELETE' })
 export const addShopLinks = (contextId: number, text: string) =>
   requestJson<{ added: number; skipped: number; failed: number }>(`/shopping/contexts/${contextId}/links`, { method: 'POST', body: { text } })
 export const refreshShopItems = (contextId: number) =>

@@ -9,6 +9,9 @@
 .yearBar button:last-child { margin-left: auto; }
 .secondaryButton, .primaryButton, .dangerButton { min-height: var(--control-height); display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border-radius: var(--control-radius); font-size: var(--control-font-size); font-weight: 650; }
 .secondaryButton { border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.googleButton { min-height: var(--control-height); display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid #4285f4; border-radius: var(--control-radius); background: #fff; color: #174ea6; font-size: var(--control-font-size); font-weight: 650; white-space: nowrap; }
+.googleButton:hover { background: #f3f7ff; }
+.googleButton:disabled { opacity: .5; cursor: not-allowed; }
 .primaryButton { border: 1px solid var(--primary-action-bg); background: var(--primary-action-bg); color: var(--primary-action-ink); }
 .primaryButton:hover { background: var(--primary-action-hover); }
 .dangerButton { border: 1px solid #b34535; background: transparent; color: #b34535; }

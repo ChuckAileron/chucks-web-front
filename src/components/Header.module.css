@@ -71,6 +71,14 @@
   font-size: var(--fs-xs);
 }
 
+.logout {
+  min-height: 34px;
+  padding: 6px 10px;
+  border-color: var(--line);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
 :global([data-theme='dark']) .header {
   background: #122136;
 }

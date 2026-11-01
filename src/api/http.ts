@@ -60,17 +60,27 @@ export async function requestJson<T>(
   const { method = 'GET', body } = options
   const url = `${resolveBffUrl()}${path}`
   let response: Response
+  const headers: Record<string, string> = {}
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  const token = sessionStorage.getItem('chucks.auth-token')
+  if (token) headers.Authorization = `Bearer ${token}`
   try {
     response = await fetch(url, {
       method,
-      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      headers: Object.keys(headers).length ? headers : undefined,
       body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
     throw new Error(`No se pudo conectar con el BFF en ${url} — ${reason}`)
   }
-  if (!response.ok) throw new Error(await errorMessage(response))
+  if (!response.ok) {
+    if (response.status === 401 && !path.startsWith('/auth/')) {
+      sessionStorage.removeItem('chucks.auth-token')
+      window.dispatchEvent(new Event('chucks:session-expired'))
+    }
+    throw new Error(await errorMessage(response))
+  }
   if (response.status === 204) return undefined as T
   const text = await response.text()
   if (!text.trim()) return undefined as T

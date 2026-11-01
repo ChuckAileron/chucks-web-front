@@ -4,6 +4,7 @@ import {
   clearShopItems,
   createShopContext,
   deleteShopContext,
+  deleteShopItem,
   fetchShopContexts,
   fetchShopItems,
   refreshShopItems,
@@ -128,6 +129,16 @@ export default function ShoppingWishlistTool() {
     })
   }
 
+  const removeItem = (item: ShopItem) => {
+    if (!active || !window.confirm(`¿Eliminar “${item.name}” de la lista?`)) return
+    void run(async () => {
+      await deleteShopItem(active.id, item.id)
+      await loadContexts(active.id)
+      await loadItems(active.id)
+      setMessage('Artículo eliminado de la lista.')
+    })
+  }
+
   return (
     <section className={styles.shopping}>
       <SectionHeading eyebrow="LISTA PERSONAL" title="Lista de compras" description="Guarda enlaces de tiendas, subastas y marketplaces organizados por contexto." status="PostgreSQL local" />
@@ -152,13 +163,13 @@ export default function ShoppingWishlistTool() {
             <button className={styles.secondaryButton} disabled={busy || !items.some((item) => !item.active || item.error)} onClick={clearInactive}>Limpiar inactivos</button>
           </div>
         </section>
-        {items.length ? <div className={styles.cards}>{items.map((item) => <ShopItemCard key={item.id} item={item} />)}</div> : <div className={styles.empty}><span>🛒</span><strong>Aún no hay artículos en esta pestaña.</strong><p>Pega enlaces de tiendas o marketplaces y pulsa “Analizar y guardar”.</p></div>}
+        {items.length ? <div className={styles.cards}>{items.map((item) => <ShopItemCard key={item.id} item={item} busy={busy} onRemove={() => removeItem(item)} />)}</div> : <div className={styles.empty}><span>🛒</span><strong>Aún no hay artículos en esta pestaña.</strong><p>Pega enlaces de tiendas o marketplaces y pulsa “Analizar y guardar”.</p></div>}
       </> : <div className={styles.empty}><span>🛒</span><strong>No hay pestañas de contexto.</strong><p>Crea una pestaña, por ejemplo “Accesorios PC”, para empezar.</p><button className={styles.primaryButton} onClick={() => setCreating(true)}>＋ Crear contexto</button></div>}
     </section>
   )
 }
 
-function ShopItemCard({ item }: { item: ShopItem }) {
+function ShopItemCard({ item, busy, onRemove }: { item: ShopItem; busy: boolean; onRemove: () => void }) {
   const [imageFailed, setImageFailed] = useState(false)
   return <article className={`${styles.card} ${!item.active ? styles.inactive : ''}`}>
     <a className={styles.cardImage} href={item.url} target="_blank" rel="noreferrer" aria-label={`Abrir ${item.name} en ${item.page}`}>
@@ -170,6 +181,7 @@ function ShopItemCard({ item }: { item: ShopItem }) {
     <div className={styles.cardBottom}>
       {item.store && <span className={styles.store}>{item.store}</span>}
       <div className={styles.priceBlock}><strong>{formatPrice(item)}</strong>{item.condition && <small>{item.condition}</small>}{item.error && <small className={styles.error}>{item.error}</small>}</div>
+      <button type="button" className={styles.removeItemButton} disabled={busy} onClick={onRemove} aria-label={`Eliminar ${item.name}`}>Eliminar</button>
     </div>
   </article>
 }

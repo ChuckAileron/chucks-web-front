@@ -14,6 +14,7 @@ const quickLinks: { key: NavKey; label: string; icon: string }[] = [
   { key: 'calendar', label: 'Calendario', icon: '#icon-calendar' },
   { key: 'collection', label: 'Colección', icon: '#icon-collection' },
   { key: 'shopping', label: 'Lista de compras', icon: '#icon-cart' },
+  { key: 'sites', label: 'Sitios de interés', icon: '#icon-globe' },
   { key: 'weight', label: 'Control de peso', icon: '#icon-scale' },
   { key: 'wiki', label: 'Wiki', icon: '#icon-book' },
 ]
