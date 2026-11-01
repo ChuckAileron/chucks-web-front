@@ -217,8 +217,9 @@ function App() {
         pendingCount={pendingCount}
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
+        onAddTask={handleOpenAddTask}
       />
-      <div className={styles.shell}>
+      <div className={`${styles.shell} ${activeNav === 'home' ? styles.homeShell : ''}`}>
         <Header
           active={activeNav}
           onToggleMenu={() => setMenuOpen((o) => !o)}
@@ -226,7 +227,7 @@ function App() {
           onShowNotifications={() => setNotifOpen(true)}
           onLogout={handleLogout}
         />
-        <main className={styles.main} id="inicio">
+        <main className={`${styles.main} ${activeNav === 'home' ? styles.homeMain : ''}`} id="inicio">
           {activeNav === 'home' && <Hero active={activeNav} onNavigate={setActiveNav} />}
           {(activeNav === 'home' || activeNav === 'tasks') && (
             <TasksList
@@ -253,8 +254,9 @@ function App() {
           {activeNav === 'shopping' && <ShoppingWishlistTool />}
           {activeNav === 'sites' && <SitesOfInterestTool />}
           <footer className={styles.footer}>
-            <span>CHUCK’s Web · Tu espacio personal</span>
-            <span>Prototipo visual con datos de ejemplo</span>
+            {activeNav === 'home'
+              ? <><span>CHUCK’s Web · Tu espacio personal</span><span>Tu espacio, a tu manera</span></>
+              : <span>CHUCK's Web © 2026 · Tu espacio personal</span>}
           </footer>
         </main>
       </div>

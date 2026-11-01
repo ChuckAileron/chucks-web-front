@@ -23,6 +23,8 @@ export const fetchSiteContexts = () => requestJson<SiteContext[]>('/sites/contex
 export const createSiteContext = (name: string) =>
   requestJson<SiteContext>('/sites/contexts', { method: 'POST', body: { name } })
 export const deleteSiteContext = (id: number) => requestVoid(`/sites/contexts/${id}`, { method: 'DELETE' })
+export const renameSiteContext = (id: number, name: string) =>
+  requestJson<SiteContext>(`/sites/contexts/${id}`, { method: 'PATCH', body: { name } })
 export const fetchSitePages = (contextId: number) =>
   requestJson<SavedSite[]>(`/sites/contexts/${contextId}/pages`)
 export const saveSitePage = (contextId: number, url: string) =>

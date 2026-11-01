@@ -1,6 +1,8 @@
 .shopping { width: 100%; min-width: 0; color: var(--ink); }
 .contextTabs { margin-bottom: 21px; }
 .newContextTab { margin-left: auto; color: var(--teal) !important; }
+.manageContextsTab { padding-inline: 10px !important; color: var(--muted) !important; }
+.manageContextsTab:hover { color: var(--ink) !important; }
 .notice { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 16px; padding: 10px 13px; border: 1px solid rgba(8,120,104,.25); border-radius: var(--control-radius); background: rgba(8,120,104,.07); color: var(--ink); font-size: var(--control-font-size); }
 .notice button { min-height: var(--control-height-compact); padding: 3px 8px; border: 0; background: transparent; color: var(--muted); font-size: var(--fs-lg); }
 .contextForm { display: flex; align-items: end; gap: 9px; margin: 0 0 20px; padding: 15px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.35); }

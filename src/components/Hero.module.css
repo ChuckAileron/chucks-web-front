@@ -15,7 +15,7 @@
 .eyebrow {
   color: var(--teal);
   font-size: var(--fs-xs);
-  font-weight: 750;
+  font-weight: 650;
   letter-spacing: .11em;
   text-transform: uppercase;
 }
@@ -23,6 +23,7 @@
 .welcomeHeader h1 {
   margin: 5px 0 2px;
   font-size: clamp(27px, 3.2vw, 36px);
+  font-weight: 650;
   letter-spacing: -.045em;
   line-height: 1.2;
 }
@@ -68,6 +69,7 @@
 .heroContent h2 {
   margin: 7px 0 4px;
   font-size: clamp(36px, 5vw, 58px);
+  font-weight: 650;
   line-height: 1.04;
   letter-spacing: -.06em;
 }
@@ -91,7 +93,7 @@
   background: color-mix(in srgb, var(--teal) 9%, transparent);
   color: var(--teal);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .heroNote i {
@@ -104,9 +106,7 @@
 
 .heroVisual {
   min-height: 246px;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: right center;
+  background: radial-gradient(ellipse at 72% 46%, color-mix(in srgb, var(--teal) 18%, transparent), transparent 68%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 16%);
 }
 
@@ -123,6 +123,7 @@
 .sectionHead h2 {
   margin: 0;
   font-size: var(--fs-xl);
+  font-weight: 650;
   letter-spacing: -.025em;
 }
 
@@ -168,7 +169,7 @@
 .iconBox svg { width: 21px; height: 21px; }
 
 .cardCopy { min-width: 0; display: grid; gap: 4px; }
-.cardCopy strong { overflow: hidden; font-size: var(--fs-sm); text-overflow: ellipsis; white-space: nowrap; }
+.cardCopy strong { overflow: hidden; font-size: var(--fs-sm); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .cardCopy small { overflow: hidden; color: var(--muted); font-size: var(--fs-xs); text-overflow: ellipsis; white-space: nowrap; }
 .arrow { width: 17px; height: 17px; color: var(--muted); }
 .quickNavItem:hover .arrow, .quickNavItem.active .arrow { color: var(--teal); }
@@ -197,7 +198,7 @@
   .welcomeHero { min-height: 0; grid-template-columns: 1fr; position: relative; }
   .heroContent { min-height: 238px; padding: 27px 23px; }
   .heroContent p { max-width: 250px; }
-  .heroVisual { position: absolute; inset: 0 0 0 auto; width: 52%; height: 100%; min-height: 0; opacity: .38; background-position: right center; mask-image: linear-gradient(90deg, transparent 0%, #000 45%); }
+  .heroVisual { position: absolute; inset: 0 0 0 auto; width: 52%; height: 100%; min-height: 0; opacity: .38; mask-image: linear-gradient(90deg, transparent 0%, #000 45%); }
   .quickNav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .quickNavItem { min-height: 76px; grid-template-columns: 36px minmax(0, 1fr); gap: 9px; padding: 10px; }
   .iconBox { width: 36px; height: 36px; border-radius: 9px; }

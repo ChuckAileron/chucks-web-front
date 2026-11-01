@@ -1,6 +1,8 @@
 .shell {
-  margin-left: 236px;
+  margin-left: 240px;
 }
+
+.homeShell { margin-left: 236px; }
 
 .authLoading {
   min-height: 100vh;
@@ -30,6 +32,8 @@
   gap: 28px;
   width: 100%;
 }
+
+.homeMain { min-height: calc(100vh - 72px); }
 
 .emptySection {
   margin: 0;
@@ -63,6 +67,8 @@
   color: #adbdce;
 }
 
+:global([data-theme='dark']) .homeMain { background: #0a111c; }
+
 @media (max-width: 1100px) {
   .shell {
     margin-left: 210px;
@@ -81,6 +87,8 @@
   .main {
     padding: 28px 20px;
   }
+
+  .homeMain { min-height: calc(100vh - 64px); }
 
   .footer {
     font-size: var(--fs-xs);

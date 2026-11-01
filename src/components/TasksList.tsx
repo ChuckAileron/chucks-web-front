@@ -78,6 +78,7 @@ export function TasksList({
             onEdit={onEditTask}
             onDelete={onDeleteTask}
             showActions={showContextTabs}
+            homePreview={!showContextTabs}
           />
         ))}
       </div>

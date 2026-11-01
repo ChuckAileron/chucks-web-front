@@ -1,0 +1,29 @@
+.overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; overflow: auto; padding: 20px; background: rgba(5,13,23,.5); backdrop-filter: blur(3px); }
+.dialog { width: min(600px, 100%); max-height: 90vh; overflow: auto; padding: 22px; border: 1px solid var(--line); border-radius: 13px; background: var(--canvas); color: var(--ink); box-shadow: 0 18px 60px #0005; }
+.dialog > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+.eyebrow { color: var(--muted); font-size: var(--fs-xs); font-weight: 650; letter-spacing: .1em; }
+.dialog h2 { margin: 4px 0 0; font-size: var(--fs-xl); font-weight: 650; }
+.close { width: var(--control-height-compact); min-height: var(--control-height-compact); padding: 0; font-size: var(--fs-lg); }
+.intro { margin: 11px 0 17px; color: var(--muted); font-size: var(--fs-sm); }
+.error { margin: 0 0 10px; color: #b34535; font-size: var(--fs-sm); }
+.list { display: grid; gap: 7px; }
+.row { min-height: 54px; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--control-radius); }
+.name { min-width: 0; flex: 1; overflow-wrap: anywhere; font-size: var(--fs-sm); font-weight: 600; }
+.count { flex: none; color: var(--muted); font-size: var(--fs-xs); }
+.edit, .delete { min-height: var(--control-height-compact); padding: 6px 9px; border-radius: var(--control-radius-compact); font-size: var(--fs-xs); }
+.edit { color: var(--teal); }
+.delete { color: #b34535; }
+.renameForm { display: flex; align-items: center; gap: 7px; }
+.renameForm input { min-width: 0; flex: 1; min-height: var(--control-height-compact); padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--control-radius-compact); background: transparent; color: var(--ink); font-size: var(--fs-sm); }
+.renameForm button { min-height: var(--control-height-compact); padding: 6px 9px; border-radius: var(--control-radius-compact); font-size: var(--fs-xs); }
+.empty { padding: 16px 0; color: var(--muted); text-align: center; font-size: var(--fs-sm); }
+.dialog > footer { display: flex; justify-content: flex-end; margin-top: 17px; }
+.closeFooter { min-height: var(--control-height-compact); padding: 7px 12px; font-size: var(--fs-sm); }
+@media (max-width: 560px) {
+  .dialog { padding: 16px; }
+  .row { flex-wrap: wrap; }
+  .name { flex-basis: calc(100% - 4px); }
+  .count { margin-right: auto; }
+  .renameForm { flex-wrap: wrap; }
+  .renameForm input { flex-basis: 100%; }
+}

@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 22px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -31,7 +31,7 @@
   font-size: var(--fs-xs);
   color: #617184;
   background: #f5f7fa;
-  border-radius: 5px;
+  border-radius: 999px;
   padding: 4px 8px;
 }
 
@@ -82,9 +82,13 @@
 }
 
 :global([data-theme='dark']) .task .tag {
-  background: #20384a;
-  color: #b8cbd8;
+  background: #25364a;
+  color: #c1d3e3;
 }
+
+.homePreview { padding-inline: 22px; }
+.homePreview .tag { border-radius: 5px; }
+:global([data-theme='dark']) .homePreview .tag { background: #20384a; color: #b8cbd8; }
 
 :global([data-theme='dark']) .task input {
   accent-color: #29d7c0;

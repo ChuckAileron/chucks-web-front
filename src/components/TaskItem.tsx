@@ -14,11 +14,12 @@ interface TaskItemProps {
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
   showActions?: boolean
+  homePreview?: boolean
 }
 
-export function TaskItem({ task, onToggle, onEdit, onDelete, showActions = true }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onEdit, onDelete, showActions = true, homePreview = false }: TaskItemProps) {
   return (
-    <div className={styles.task}>
+    <div className={`${styles.task} ${homePreview ? styles.homePreview : ''}`}>
       <input
         type="checkbox"
         id={`task-${task.id}`}

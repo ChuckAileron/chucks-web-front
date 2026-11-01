@@ -20,7 +20,7 @@
 
 .homeTasks .sectionHead { margin-bottom: 2px; }
 .homeTasks .headInfo { display: block; }
-.homeTasks .sectionHead h2 { font-size: var(--fs-2xl); letter-spacing: -.03em; }
+.homeTasks .sectionHead h2 { font-size: var(--fs-2xl); font-weight: 650; letter-spacing: -.03em; }
 .homeTasks .pendingCount { display: block; margin-top: 3px; font-size: var(--fs-sm); }
 
 .contextTabs {
@@ -114,11 +114,12 @@
 }
 
 :global([data-theme='dark']) .taskList {
-  background: #111e2e;
-  border-color: #293c4c;
+  background: #122136;
+  border-color: #34465a;
 }
 
 :global([data-theme='dark']) .homeTasks .sectionHead h2 { color: #f1f7f7; }
+:global([data-theme='dark']) .homeTasks .taskList { background: #111e2e; border-color: #293c4c; }
 
 @media (max-width: 520px) {
   .contextManager { padding: 16px; }

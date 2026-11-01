@@ -6,11 +6,13 @@ import {
   fetchSiteContexts,
   fetchSitePages,
   recaptureSitePage,
+  renameSiteContext,
   saveSitePage,
   type SavedSite,
   type SiteContext,
 } from '../api/sites'
 import SectionHeading from './SectionHeading'
+import ContextManager from './ContextManager'
 import styles from './SitesOfInterestTool.module.css'
 
 export default function SitesOfInterestTool() {
@@ -20,6 +22,7 @@ export default function SitesOfInterestTool() {
   const [url, setUrl] = useState('')
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
+  const [managingContexts, setManagingContexts] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -67,14 +70,23 @@ export default function SitesOfInterestTool() {
     })
   }
 
-  const removeContext = () => {
-    if (!active || !window.confirm(`¿Eliminar “${active.name}” y todos sus sitios guardados?`)) return
-    void run(async () => {
-      await deleteSiteContext(active.id)
-      setActiveId(null)
+  const renameContext = async (id: number | string, name: string) => {
+    setBusy(true)
+    try {
+      await renameSiteContext(Number(id), name)
+      await loadContexts(activeId)
+      setMessage(`Contexto renombrado a “${name}”.`)
+    } finally { setBusy(false) }
+  }
+
+  const removeContext = async (contextId: number | string) => {
+    setBusy(true)
+    try {
+      await deleteSiteContext(Number(contextId))
+      if (activeId === Number(contextId)) setActiveId(null)
       await loadContexts()
-      setMessage('Contexto eliminado.')
-    })
+      setMessage('Contexto y sitios guardados eliminados.')
+    } finally { setBusy(false) }
   }
 
   const addPage = () => {
@@ -110,13 +122,15 @@ export default function SitesOfInterestTool() {
     <nav className={`${styles.contextTabs} app-tabs`} aria-label="Contextos de sitios">
       {contexts.map((context) => <button key={context.id} type="button" className={context.id === activeId ? 'active' : ''} onClick={() => setActiveId(context.id)}>{context.name}<b>{context.total}</b></button>)}
       <button type="button" className={styles.newContextTab} onClick={() => setCreating(true)}>＋ Nuevo contexto</button>
+      <button type="button" className={styles.manageContextsTab} onClick={() => setManagingContexts(true)}>⚙ Administrar</button>
     </nav>
 
     {message && <div className={styles.notice} role="status"><span>{message}</span><button type="button" aria-label="Cerrar aviso" onClick={() => setMessage('')}>×</button></div>}
     {creating && <form className={styles.contextForm} onSubmit={(event) => { event.preventDefault(); addContext() }}><label><span>Nombre del contexto</span><input autoFocus value={newName} onChange={(event) => setNewName(event.target.value)} maxLength={80} placeholder="Ej. Diseño, Recetas, Herramientas…" /></label><button className={styles.primaryButton} disabled={busy || !newName.trim()}>Crear contexto</button><button type="button" className={styles.secondaryButton} onClick={() => { setCreating(false); setNewName('') }}>Cancelar</button></form>}
+    {managingContexts && <ContextManager contexts={contexts} elementLabel="páginas" onClose={() => setManagingContexts(false)} onRename={renameContext} onDelete={(context) => removeContext(context.id)} />}
 
     {active ? <>
-      <div className={styles.contextHeading}><div><h2>{active.name}</h2><p>{active.total} {active.total === 1 ? 'sitio guardado' : 'sitios guardados'}</p></div><button className={styles.dangerButton} disabled={busy} onClick={removeContext}>Eliminar contexto</button></div>
+      <div className={styles.contextHeading}><div><h2>{active.name}</h2><p>{active.total} {active.total === 1 ? 'sitio guardado' : 'sitios guardados'}</p></div></div>
       <form className={styles.addPanel} aria-label="Guardar sitio web" onSubmit={(event) => { event.preventDefault(); addPage() }}>
         <label htmlFor="site-url">Dirección del sitio</label>
         <div className={styles.addRow}><input id="site-url" type="url" required value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://ejemplo.com/pagina" /><button className={styles.primaryButton} disabled={busy || !url.trim()}>{busy ? 'Capturando…' : 'Guardar sitio'}</button></div>

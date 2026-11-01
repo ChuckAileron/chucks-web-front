@@ -1,5 +1,4 @@
 import styles from './Hero.module.css'
-import bannerImg from '../assets/banner.jpg'
 import type { NavKey } from './Sidebar'
 
 interface HeroProps {
@@ -36,12 +35,7 @@ export function Hero({ active, onNavigate }: HeroProps) {
         <p>Organiza tus días, guarda tus ideas y disfruta el camino.</p>
         <span className={styles.heroNote}><i aria-hidden="true" /> Tu espacio está listo</span>
       </div>
-      <div
-        className={styles.heroVisual}
-        role="img"
-        aria-label="Ilustración de CHUCK's Web"
-        style={{ backgroundImage: `linear-gradient(90deg, rgba(13,35,48,.12), rgba(13,35,48,.02)), url("${bannerImg}")` }}
-      />
+      <div className={styles.heroVisual} aria-hidden="true" />
     </section>
 
     <section className={styles.spaces} aria-labelledby="home-spaces-title">

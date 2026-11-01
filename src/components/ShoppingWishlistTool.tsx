@@ -8,11 +8,13 @@ import {
   fetchShopContexts,
   fetchShopItems,
   refreshShopItems,
+  renameShopContext,
   type ShopContext,
   type ShopItem,
   type ShopSort,
 } from '../api/shopping'
 import SectionHeading from './SectionHeading'
+import ContextManager from './ContextManager'
 import styles from './ShoppingWishlistTool.module.css'
 
 const SORT_OPTIONS: { value: ShopSort; label: string }[] = [
@@ -31,6 +33,7 @@ export default function ShoppingWishlistTool() {
   const [sort, setSort] = useState<ShopSort>('date-desc')
   const [links, setLinks] = useState('')
   const [creating, setCreating] = useState(false)
+  const [managingContexts, setManagingContexts] = useState(false)
   const [newName, setNewName] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
@@ -83,14 +86,23 @@ export default function ShoppingWishlistTool() {
     })
   }
 
-  const removeContext = () => {
-    if (!active || !window.confirm(`¿Eliminar la pestaña “${active.name}” y todos sus artículos?`)) return
-    void run(async () => {
-      await deleteShopContext(active.id)
-      setActiveId(null)
+  const renameContext = async (id: number | string, name: string) => {
+    setBusy(true)
+    try {
+      await renameShopContext(Number(id), name)
+      await loadContexts(activeId)
+      setMessage(`Contexto renombrado a “${name}”.`)
+    } finally { setBusy(false) }
+  }
+
+  const removeContext = async (contextId: number | string) => {
+    setBusy(true)
+    try {
+      await deleteShopContext(Number(contextId))
+      if (activeId === Number(contextId)) setActiveId(null)
       await loadContexts()
-      setMessage('Pestaña eliminada.')
-    })
+      setMessage('Contexto eliminado.')
+    } finally { setBusy(false) }
   }
 
   const saveLinks = () => {
@@ -146,13 +158,15 @@ export default function ShoppingWishlistTool() {
       <nav className={`${styles.contextTabs} app-tabs`} aria-label="Contextos de compra">
         {contexts.map((context) => <button key={context.id} type="button" className={context.id === activeId ? 'active' : ''} onClick={() => setActiveId(context.id)}>{context.name}<b>{context.total}</b></button>)}
         <button type="button" className={styles.newContextTab} onClick={() => setCreating(true)}>＋ Nueva pestaña</button>
+        <button type="button" className={styles.manageContextsTab} onClick={() => setManagingContexts(true)}>⚙ Administrar</button>
       </nav>
 
       {message && <div className={styles.notice} role="status"><span>{message}</span><button type="button" aria-label="Cerrar aviso" onClick={() => setMessage('')}>×</button></div>}
       {creating && <form className={styles.contextForm} onSubmit={(event) => { event.preventDefault(); createContext() }}><label><span>Nombre del contexto</span><input autoFocus value={newName} onChange={(event) => setNewName(event.target.value)} maxLength={80} placeholder="Ej. Accesorios PC, Música…" /></label><button className={styles.primaryButton} disabled={busy || !newName.trim()}>Crear pestaña</button><button type="button" className={styles.secondaryButton} onClick={() => { setCreating(false); setNewName('') }}>Cancelar</button></form>}
+      {managingContexts && <ContextManager contexts={contexts} elementLabel="artículos" onClose={() => setManagingContexts(false)} onRename={renameContext} onDelete={(context) => removeContext(context.id)} />}
 
       {active ? <>
-        <div className={styles.contextHeading}><div><h2>{active.name}</h2><p>{active.total} artículos guardados</p></div><button className={styles.dangerButton} disabled={busy} onClick={removeContext}>Eliminar pestaña</button></div>
+        <div className={styles.contextHeading}><div><h2>{active.name}</h2><p>{active.total} artículos guardados</p></div></div>
         <section className={styles.addPanel} aria-label="Agregar enlaces a la lista">
           <label htmlFor="shop-links">Pega uno o varios enlaces, uno por línea</label>
           <textarea id="shop-links" value={links} onChange={(event) => setLinks(event.target.value)} placeholder={'https://tienda.com/articulo\nhttps://subasta.com/lote'} />
