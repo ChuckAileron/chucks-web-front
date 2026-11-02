@@ -24,10 +24,11 @@
 .weightDown { color: var(--teal); }
 .chartWrap { width: 100%; overflow-x: auto; }
 .chart { width: 100%; min-width: 560px; height: auto; overflow: visible; }
+.chart text { font-family: var(--font-sans); font-weight: 400; stroke: none; stroke-width: 0; }
 .gridLine { stroke: var(--line); stroke-width: 1; }
-.axisLabel { fill: var(--muted); font-size: 11px; }
+.axisLabel { fill: var(--muted); font-size: 11px; font-weight: 400; }
 .targetLine { stroke: #b34535; stroke-width: 1.5; stroke-dasharray: 6 5; }
-.targetLabel { fill: #b34535; font-size: 11px; }
+.targetLabel { fill: #b34535; font-size: 11px; font-weight: 500; }
 .chartLine { fill: none; stroke: var(--teal); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .chartDot { fill: var(--canvas); stroke: var(--teal); stroke-width: 3; }
 .entryList { overflow: hidden; border: 1px solid var(--line); border-radius: 9px; }

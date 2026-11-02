@@ -77,7 +77,7 @@ export default function ControlPesoTool() {
 }
 
 function WeightChart({ entries, target }: { entries: WeightEntry[]; target: number | null }) {
-  const width = 760, height = 260, pad = { top: 20, right: 25, bottom: 32, left: 58 }
+  const width = 1200, height = 410, pad = { top: 20, right: 25, bottom: 32, left: 58 }
   const values = entries.map((entry) => entry.weight)
   const all = target === null ? values : [...values, target]
   const low = Math.min(...all), high = Math.max(...all), range = Math.max(high - low, 1)
