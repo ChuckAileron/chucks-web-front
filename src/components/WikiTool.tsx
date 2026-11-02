@@ -526,7 +526,7 @@ export default function WikiTool() {
       {importState && <div className={styles.importOverlay} role="status" aria-live="polite"><div className={styles.importLoader}><span className={styles.spinner} /><strong>{importState.label}</strong>{importState.total > 1 && <><small>{Math.min(importState.current, importState.total)} de {importState.total} elementos</small><span className={styles.progressTrack}><i style={{ width: `${Math.min(100, (importState.current / importState.total) * 100)}%` }} /></span></>}</div></div>}
       {importCategoryOpen && <div className={styles.categoryDialogOverlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setImportCategoryOpen(false) }}><form className={styles.categoryDialog} role="dialog" aria-modal="true" aria-labelledby="wiki-import-category-title" onSubmit={(event) => { event.preventDefault(); bulkFileRef.current?.click() }}><span className={styles.eyebrow}>IMPORTAR CONTENIDO</span><h2 id="wiki-import-category-title">Importar carpetas</h2><p>Selecciona varias carpetas a la vez. Se conservará la jerarquía completa y los archivos Markdown.</p><label htmlFor="wiki-import-category">Categoría para todo el contenido</label><select id="wiki-import-category" value={customImportCategory ? '__new__' : importCategory} onChange={(event) => { const value = event.target.value; setCustomImportCategory(value === '__new__'); setImportCategory(value === '__new__' ? '' : value) }}><option value="General">General</option>{categories.filter((category) => category.name !== 'General').map((category) => <option key={category.name} value={category.name}>{category.name}</option>)}<option value="__new__">＋ Nueva categoría…</option></select>{customImportCategory && <input className={styles.newCategoryInput} value={importCategory} onChange={(event) => setImportCategory(event.target.value)} placeholder="Nombre de la nueva categoría" autoFocus required /> }<footer><button type="button" className={styles.ghostButton} onClick={() => setImportCategoryOpen(false)}>Cancelar</button><button className={styles.primaryButton}>Seleccionar carpetas</button></footer></form></div>}
       <div className={styles.wikiIntro}>
-        <SectionHeading eyebrow="BASE DE CONOCIMIENTO" title="Wiki" description="Documentación, procesos e ideas. Todo conectado." status="PostgreSQL local" />
+        <SectionHeading eyebrow="BASE DE CONOCIMIENTO" title="Wiki" description="Documentación, procesos e ideas. Todo conectado." />
         <header className={styles.header}>
         <label className={styles.search}>
           <span aria-hidden="true">⌕</span>
@@ -543,22 +543,13 @@ export default function WikiTool() {
         </header>
       </div>
 
-      <div className={styles.layout}>
-        <aside className={styles.sidebar}>
-          <p className={styles.sidebarLabel}>ESPACIO DE TRABAJO</p>
-          <button className={view === 'home' ? styles.selected : ''} onClick={() => go('home')}><span>⌂</span> Inicio</button>
-          <p className={styles.sidebarLabel}>PÁGINAS</p>
-          <button className={view === 'browse' ? styles.selected : ''} onClick={() => go('browse')}><span>▤</span> Todas las páginas <small>{pages.length}</small></button>
-          <button className={view === 'recent' ? styles.selected : ''} onClick={() => go('recent')}><span>◷</span> Recientes</button>
-          <button className={view === 'pinned' ? styles.selected : ''} onClick={() => go('pinned')}><span>★</span> Destacadas</button>
-          <p className={styles.sidebarLabel}>CATEGORÍAS</p>
-          {categories.map((category) => <button key={category.name} className={view === 'category' && activeCategory === category.name ? styles.selected : ''} onClick={() => openCategory(category.name)}><span>{category.icon}</span> {category.name}<small>{category.total}</small></button>)}
-          {!categories.length && <p className={styles.sidebarEmpty}>Tus categorías aparecerán aquí.</p>}
-          <div className={styles.sidebarFooter}><b>{stats.total}</b> páginas en tu base de conocimiento</div>
-        </aside>
+      <nav className={styles.tabs} aria-label="Vistas de la Wiki">
+        {[['home', 'Inicio'], ['browse', 'Todas las páginas'], ['recent', 'Recientes'], ['pinned', 'Destacadas']].map(([key, label]) => <button type="button" key={key} className={`${styles.tab} ${view === key ? styles.tabSelected : ''}`} aria-selected={view === key} onClick={() => go(key as View)}>{label}</button>)}
+      </nav>
 
+      <div className={styles.layout}>
         <main className={styles.content}>
-          <div className={styles.breadcrumb}><button onClick={() => go('home')}>Wiki</button><span>/</span><strong>{heading}</strong></div>
+          {view !== 'home' && <div className={styles.breadcrumb}><button onClick={() => go('home')}>Wiki</button><span>/</span><strong>{heading}</strong></div>}
           {message && <div className={styles.notice} role="status">{message}<button onClick={() => setMessage('')} aria-label="Cerrar">×</button></div>}
 
           {view === 'editor' && draft ? (
@@ -586,10 +577,15 @@ export default function WikiTool() {
             </article>
           ) : view === 'home' && !normalizedTerm ? (
             <div className={styles.home}>
-              <section className={styles.welcome}><div><span className={styles.eyebrow}>TU BASE DE CONOCIMIENTO</span><h2>Ideas claras, conocimiento conectado.</h2><p>Guarda documentación, procesos y respuestas para encontrarlos cuando los necesites.</p><button className={styles.primaryButton} onClick={() => go('browse')}>Explorar páginas <span>→</span></button></div><div className={styles.welcomeArt} aria-hidden="true"><span>✦</span><i>▤</i><b>⌘</b></div><div className={styles.stats}><div><b>{stats.total}</b><span>Páginas</span></div><div><b>{categories.length}</b><span>Categorías</span></div><div><b>{stats.contributors}</b><span>Colaboradores</span></div><div><b>{relativeTime(stats.lastUpdated)}</b><span>Última actualización</span></div></div></section>
-              <section className={styles.section}><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>PARA SEGUIR</span><h3>Páginas recientes</h3></div><button className={styles.textButton} onClick={() => go('recent')}>Ver todas →</button></div>{recent.length ? <PageList pages={recent} onOpen={openPage} onTogglePin={togglePinned} /> : <EmptyState onCreate={() => startCreate()} title="Tu Wiki empieza aquí" text="Crea una página para guardar tu primer conocimiento." />}</section>
-              <section className={styles.section}><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>ACCESO RÁPIDO</span><h3>Páginas destacadas</h3></div><button className={styles.textButton} onClick={() => go('pinned')}>Ver todas →</button></div>{pinned.length ? <div className={styles.featuredGrid}>{pinned.map((page) => <button key={page.id} className={styles.featuredCard} onClick={() => openPage(page)}><span>{page.icon}</span><strong>{page.title}</strong><small>{page.summary || page.category}</small><em>Abrir página →</em></button>)}</div> : <p className={styles.emptyInline}>Marca páginas como destacadas para verlas aquí.</p>}</section>
-              {!!categories.length && <section className={styles.section}><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>ORGANIZACIÓN</span><h3>Explorar categorías</h3></div></div><div className={styles.categoryGrid}>{categories.map((category) => <button key={category.name} className={styles.categoryCard} onClick={() => openCategory(category.name)}><span>{category.icon}</span><div><strong>{category.name}</strong><small>{category.total} páginas</small></div><b>→</b></button>)}</div></section>}
+              <section className={styles.welcome}><div><span className={styles.eyebrow}>UN LUGAR PARA APRENDER Y CREAR</span><h2>Ideas claras, conocimiento conectado.</h2><p>Tu documentación y tus ideas, listas para encontrarlas cuando las necesites.</p></div><div className={styles.welcomeArt} aria-hidden="true"><span>✦</span><i>▤</i><b>⌘</b></div></section>
+              <section className={styles.stats} aria-label="Resumen de la Wiki"><div className={styles.stat}><strong>{stats.total}</strong><span>Páginas</span></div><div className={styles.stat}><strong>{categories.length}</strong><span>Categorías</span></div><div className={styles.stat}><strong>{stats.contributors}</strong><span>Colaboradores</span></div><div className={styles.stat}><strong>{relativeTime(stats.lastUpdated)}</strong><span>Última actualización</span></div></section>
+              <div className={styles.homeLayout}>
+                <section className={styles.section}><div className={styles.sectionHeading}><div><h2>Páginas recientes</h2><p>Continúa donde lo dejaste.</p></div><button className={styles.textButton} onClick={() => go('recent')}>Ver todas →</button></div>{recent.length ? <PageList pages={recent} onOpen={openPage} onTogglePin={togglePinned} /> : <EmptyState onCreate={() => startCreate()} title="Tu Wiki empieza aquí" text="Crea una página para guardar tu primer conocimiento." />}</section>
+                <aside className={styles.homeAside}>
+                  <section className={styles.asideBox}><h3>Destacadas</h3><p>{pinned.length ? 'Tus páginas guardadas para encontrarlas rápido.' : 'Guarda tus páginas más importantes para encontrarlas rápido.'}</p>{pinned.length ? <div className={styles.favList}>{pinned.map((page) => <button key={page.id} onClick={() => openPage(page)}><span>★</span>{page.title}</button>)}</div> : <p className={styles.emptyAside}>Todavía no hay páginas destacadas.</p>}</section>
+                  <section className={styles.asideBox}><h3>Categorías</h3><p>Explora tu contenido organizado.</p>{categories.length ? <div className={styles.categoryGrid}>{categories.map((category) => <button key={category.name} className={styles.categoryCard} onClick={() => openCategory(category.name)}><span>{category.icon}</span><div><strong>{category.name}</strong><small>{category.total} páginas</small></div><b>→</b></button>)}</div> : <p className={styles.emptyAside}>Tus categorías aparecerán aquí.</p>}</section>
+                </aside>
+              </div>
             </div>
           ) : (
             <section className={styles.listView}>

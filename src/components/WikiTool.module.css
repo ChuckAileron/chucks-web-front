@@ -329,3 +329,79 @@
   .editorFooter { align-items: stretch; flex-direction: column-reverse; }
   .editorFooter > div { justify-content: flex-end; }
 }
+
+/* Diseño de biblioteca en la portada y navegación por pestañas. */
+.tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--wiki-line); scrollbar-width: thin; }
+.tab { min-height: 44px; flex: none; padding: 12px 14px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--wiki-muted); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
+.tab:hover { background: transparent; color: var(--ink); }
+.tabSelected { border-bottom-color: var(--wiki-accent); color: var(--wiki-accent); }
+.layout { display: block; min-height: 0; }
+.content { padding: 23px 0 34px; }
+.breadcrumb { margin-bottom: 16px; }
+.home { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.welcome { min-height: 180px; grid-template-columns: minmax(0, 1fr) 180px; grid-template-rows: 1fr; align-items: center; margin: 25px 0 0; padding: 22px 25px; border-color: #31535b; background: linear-gradient(90deg, #102833 0%, #102833e8 38%, #10283300 85%), radial-gradient(ellipse at 75% 50%, #235866, #10232e 70%); color: #f3f8f7; }
+.welcome > div:first-child { grid-column: 1; grid-row: 1; }
+.welcome .eyebrow { color: #9ef1df; }
+.welcome h2 { max-width: 490px; margin: 9px 0; font-size: clamp(var(--fs-xl), 2vw, var(--fs-3xl)); font-weight: 650; line-height: 1.18; letter-spacing: -.03em; }
+.welcome p { max-width: 440px; margin: 0; color: #c7d9d8; font-size: var(--fs-sm); line-height: 1.6; }
+.welcomeArt { grid-column: 2; grid-row: 1; }
+.welcomeArt i { border-color: #9cd6ce; background: #ffffff20; color: #b0eee1; }
+.welcomeArt span, .welcomeArt b { background: #153b40; color: #a9f4e5; }
+.stats { display: grid; grid-column: auto; grid-row: auto; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 12px 0 0; padding: 0; border: 1px solid var(--wiki-line); border-radius: 10px; background: var(--wiki-code-bg); }
+.stats > .stat { min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 13px 18px; border: 0; }
+.stats > .stat + .stat { border-left: 1px solid var(--wiki-line); }
+.stat strong { overflow: hidden; font-size: var(--fs-lg); font-weight: 650; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.stat span { color: var(--wiki-muted); font-size: var(--fs-xs); }
+.homeLayout { display: grid; grid-template-columns: minmax(0, 1fr) 270px; align-items: start; gap: 24px; margin-top: 34px; }
+.homeLayout .section { min-width: 0; margin: 0; }
+.homeLayout .sectionHeading { margin-bottom: 13px; }
+.homeLayout .sectionHeading h2 { margin: 0; font-size: var(--fs-xl); font-weight: 650; letter-spacing: -.02em; }
+.homeLayout .sectionHeading p { margin: 3px 0 0; color: var(--wiki-muted); font-size: var(--fs-sm); }
+.homeAside { min-width: 0; display: grid; gap: 14px; }
+.asideBox { padding: 18px; border: 1px solid var(--wiki-line); border-radius: 10px; background: var(--wiki-code-bg); }
+.asideBox h3 { margin: 0; font-size: var(--fs-base); font-weight: 650; }
+.asideBox > p { margin: 8px 0 14px; color: var(--wiki-muted); font-size: var(--fs-sm); line-height: 1.5; }
+.favList { display: grid; gap: 7px; }
+.favList button { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0; border-radius: 6px; background: var(--wiki-soft); color: var(--ink); font-size: var(--fs-xs); text-align: left; }
+.favList button span { color: #f6d382; }
+.favList button:hover { background: color-mix(in srgb, var(--wiki-accent) 15%, var(--wiki-soft)); }
+.emptyAside { margin: 0 !important; padding: 10px 0 0; color: var(--wiki-muted); font-size: var(--fs-xs) !important; }
+.homeLayout .categoryGrid { grid-template-columns: 1fr; gap: 7px; }
+.homeLayout .categoryCard { padding: 9px; background: var(--wiki-soft); }
+.pageList { gap: 0; overflow: hidden; border: 1px solid var(--wiki-line); border-radius: 10px; background: var(--wiki-code-bg); }
+.pageRow { min-height: 69px; gap: 13px; padding: 10px 12px; border-radius: 0; }
+.pageRow + .pageRow { border-top: 1px solid var(--wiki-line); }
+.pageIcon { background: #20433f; color: #8cebd8; }
+.pageRowOpen strong { overflow: hidden; color: var(--ink); font-size: var(--fs-sm); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.pageRowOpen small { overflow: hidden; color: var(--wiki-muted); font-size: var(--fs-xs); text-overflow: ellipsis; white-space: nowrap; }
+.pageRowCategory { padding: 4px 7px; border-radius: 5px; background: #244053; color: #c6e2e9; }
+.pageRow time { color: var(--wiki-muted); font-size: var(--fs-xs); }
+.rowArrow { display: none; }
+:global([data-theme='dark']) .tabs { border-color: #304556; }
+:global([data-theme='dark']) .tab { color: #b6c9cf; }
+:global([data-theme='dark']) .tabSelected { color: #a4f6e5; border-bottom-color: #6be1cc; }
+:global([data-theme='dark']) .stats { background: #132334; border-color: #304556; }
+:global([data-theme='dark']) .stats > .stat + .stat { border-color: #304556; }
+:global([data-theme='dark']) .pageList, :global([data-theme='dark']) .asideBox { background: #132334; border-color: #304556; }
+:global([data-theme='dark']) .pageRowCategory { background: #244053; color: #c6e2e9; }
+
+@media (max-width: 1000px) {
+  .homeLayout { grid-template-columns: minmax(0, 1fr) 240px; gap: 16px; }
+}
+@media (max-width: 800px) {
+  .content { padding: 18px 0 25px; }
+  .homeLayout { grid-template-columns: minmax(0, 1fr); gap: 25px; margin-top: 27px; }
+  .homeAside { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats > .stat:nth-child(3) { border-left: 0; border-top: 1px solid var(--wiki-line); }
+  .stats > .stat:nth-child(4) { border-top: 1px solid var(--wiki-line); }
+}
+@media (max-width: 560px) {
+  .welcome { min-height: 170px; grid-template-columns: minmax(0, 1fr); padding: 18px; }
+  .welcomeArt { display: none; }
+  .homeAside { grid-template-columns: 1fr; }
+  .stats > .stat { padding: 11px 12px; }
+  .pageRow { gap: 9px; padding: 9px; }
+  .pageRowCategory { display: none; }
+  .pageRow time { max-width: 70px; font-size: var(--fs-2xs); }
+}
