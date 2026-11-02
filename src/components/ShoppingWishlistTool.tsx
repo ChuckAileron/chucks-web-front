@@ -214,11 +214,12 @@ export default function ShoppingWishlistTool() {
             <button className={styles.secondaryButton} disabled={busy || !items.some((item) => !item.active || item.error)} onClick={clearInactive}>Limpiar inactivos</button>
           </div>
         </section>
-        {tagCounts.length > 0 && (
+        {items.length > 0 && (
           <div className={styles.tagFilters} role="group" aria-label="Categorías por etiqueta">
             <span className={styles.tagFiltersLabel}>Categorías</span>
             <button type="button" className={`${styles.tagFilter} ${!activeTagKey ? styles.tagFilterActive : ''}`} aria-pressed={!activeTagKey} onClick={() => setActiveTag(null)}>Todas<b>{items.length}</b></button>
             {tagCounts.map((tag) => <button key={tag.key} type="button" className={`${styles.tagFilter} ${activeTagKey === tag.key ? styles.tagFilterActive : ''}`} aria-pressed={activeTagKey === tag.key} onClick={() => setActiveTag((current) => current === tag.key ? null : tag.key)}>{tag.label}<b>{tag.count}</b></button>)}
+            {!tagCounts.length && <span className={styles.tagFiltersEmpty}>Aún no hay etiquetas. Agrega una desde cualquier artículo.</span>}
           </div>
         )}
         {items.length === 0
@@ -257,10 +258,11 @@ function ShopItemCard({ item, busy, onRemove, onSaveTags, onFilterTag }: { item:
     <h3><a href={item.url} target="_blank" rel="noreferrer">{item.name}</a></h3>
     <div className={styles.cardTags}>
       {itemTags.map((tag) => <button type="button" key={tag} className={styles.cardTag} onClick={() => onFilterTag(tag)} title={`Filtrar por ${tag}`}>{tag}</button>)}
-      <button type="button" className={styles.editTagsButton} onClick={() => editingTags ? setEditingTags(false) : openTagEditor()} aria-expanded={editingTags}>{editingTags ? 'Cerrar' : itemTags.length ? 'Editar etiquetas' : '＋ Etiqueta'}</button>
+      <button type="button" className={styles.editTagsButton} onClick={() => editingTags ? setEditingTags(false) : openTagEditor()} aria-expanded={editingTags}>{editingTags ? 'Cerrar etiquetas' : itemTags.length ? 'Editar etiquetas' : '＋ Agregar etiqueta'}</button>
     </div>
     {editingTags && <form className={styles.tagForm} onSubmit={saveTags}>
-      <input autoFocus value={tagDraft} onChange={(event) => setTagDraft(event.target.value)} maxLength={500} placeholder="Ej. regalos, ofertas, PC" aria-label={`Etiquetas de ${item.name}`} />
+      <label htmlFor={`item-tags-${item.id}`}>Etiquetas del artículo</label>
+      <input id={`item-tags-${item.id}`} autoFocus value={tagDraft} onChange={(event) => setTagDraft(event.target.value)} maxLength={500} placeholder="Ej. regalos, ofertas, PC" aria-label={`Etiquetas de ${item.name}`} />
       <div className={styles.tagFormActions}><button className={styles.tagSaveButton} disabled={busy}>Guardar</button><button type="button" className={styles.tagCancelButton} onClick={() => setEditingTags(false)}>Cancelar</button></div>
     </form>}
     <div className={styles.cardBottom}>

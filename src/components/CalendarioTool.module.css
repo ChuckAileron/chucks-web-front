@@ -12,6 +12,11 @@
 .googleButton { min-height: var(--control-height); display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid #4285f4; border-radius: var(--control-radius); background: #fff; color: #174ea6; font-size: var(--control-font-size); font-weight: 650; white-space: nowrap; }
 .googleButton:hover { background: #f3f7ff; }
 .googleButton:disabled { opacity: .5; cursor: not-allowed; }
+.googlePanel { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 14px; border: 1px solid rgba(66,133,244,.28); border-radius: 10px; background: linear-gradient(90deg, rgba(66,133,244,.08), rgba(66,133,244,.02)); }
+.googleInfo { min-width: 0; display: grid; gap: 3px; }
+.googleInfo strong { font-size: var(--fs-sm); }
+.googleInfo > span:last-child { color: var(--muted); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.googleActions { flex: none; display: flex; gap: 8px; }
 .primaryButton { border: 1px solid var(--primary-action-bg); background: var(--primary-action-bg); color: var(--primary-action-ink); }
 .primaryButton:hover { background: var(--primary-action-hover); }
 .dangerButton { border: 1px solid #b34535; background: transparent; color: #b34535; }
@@ -76,6 +81,8 @@
   .monthGrid { grid-template-columns: 1fr; }
   .month { padding: 13px; }
   .blankDay, .day { min-height: 62px; }
+  .googlePanel { flex-direction: column; align-items: flex-start; }
+  .googleActions { width: 100%; flex-wrap: wrap; }
   .formGrid { grid-template-columns: 1fr; }
   .wide { grid-column: auto; }
   .imageUrls > div { flex-direction: column; }

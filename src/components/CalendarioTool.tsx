@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  connectGoogleCalendar,
   createCalendarEvent,
   deleteCalendarEvent,
+  disconnectGoogleCalendar,
   EVENT_COLORS,
   fetchCalendarColors,
   fetchCalendarEvents,
+  fetchGoogleCalendarStatus,
   refreshCalendarHolidays,
+  syncGoogleCalendar,
   updateCalendarEvent,
   type CalendarEvent,
   type CalendarEventInput,
+  type GoogleCalendarStatus,
 } from '../api/calendar'
 import SectionHeading from './SectionHeading'
 import styles from './CalendarioTool.module.css'
@@ -27,8 +32,14 @@ export default function CalendarioTool() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [selectedDayLabel, setSelectedDayLabel] = useState('')
   const [draft, setDraft] = useState<Draft | null>(null)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('google') !== 'error') return ''
+    const reason = params.get('reason')
+    return `No se pudo conectar Google Calendar${reason ? `: ${reason}` : '.'}`
+  })
   const [busy, setBusy] = useState(false)
+  const [googleStatus, setGoogleStatus] = useState<GoogleCalendarStatus | null>(null)
 
   const reload = useCallback(async () => {
     const found = await fetchCalendarEvents(`${year}-01-01`, `${year}-12-31`)
@@ -37,10 +48,59 @@ export default function CalendarioTool() {
 
   useEffect(() => { void reload().catch((error: unknown) => setMessage(errorText(error))) }, [reload])
   useEffect(() => { void fetchCalendarColors().then(setColors).catch(() => setColors(EVENT_COLORS)) }, [])
+  useEffect(() => {
+    void fetchGoogleCalendarStatus()
+      .then(setGoogleStatus)
+      .catch(() => setGoogleStatus({ connected: false, email: '', calendarId: '', lastSyncAt: null }))
+  }, [])
 
   const run = async (action: () => Promise<void>) => {
     setBusy(true); setMessage('')
     try { await action() } catch (error) { setMessage(errorText(error)) } finally { setBusy(false) }
+  }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const outcome = params.get('google')
+    if (!outcome) return
+    window.history.replaceState(window.history.state, '', `${window.location.pathname}${window.location.hash}`)
+    if (outcome === 'error') return
+    void (async () => {
+      setBusy(true); setMessage('')
+      try {
+        const status = await fetchGoogleCalendarStatus()
+        setGoogleStatus(status)
+        const result = await syncGoogleCalendar(`${year}-01-01`, `${year}-12-31`)
+        await reload()
+        setMessage(`Google Calendar conectado: ${result.imported} ${result.imported === 1 ? 'evento importado' : 'eventos importados'} en ${year}.`)
+      } catch (error) {
+        setMessage(errorText(error))
+      } finally {
+        setBusy(false)
+      }
+    })()
+  }, [reload, year])
+
+  const connectGoogle = () => void run(async () => {
+    const { url } = await connectGoogleCalendar()
+    window.location.assign(url)
+  })
+
+  const syncGoogle = () => void run(async () => {
+    const result = await syncGoogleCalendar(`${year}-01-01`, `${year}-12-31`)
+    await reload()
+    setGoogleStatus(await fetchGoogleCalendarStatus())
+    setMessage(`Google Calendar sincronizado: ${result.imported} ${result.imported === 1 ? 'evento' : 'eventos'} en ${year}.`)
+  })
+
+  const disconnectGoogle = () => {
+    if (!window.confirm('¿Desconectar Google Calendar? También se quitarán los eventos importados.')) return
+    void run(async () => {
+      const result = await disconnectGoogleCalendar()
+      await reload()
+      setGoogleStatus(await fetchGoogleCalendarStatus())
+      setMessage(`Google Calendar desconectado. Se quitaron ${result.removed} ${result.removed === 1 ? 'evento importado' : 'eventos importados'}.`)
+    })
   }
 
   const openDay = (day: string) => {
@@ -51,6 +111,10 @@ export default function CalendarioTool() {
   }
   const newEvent = (day: string) => { setSelectedDay(null); setDraft(emptyDraft(day, colors[0] || 'teal')) }
   const editEvent = (event: CalendarEvent) => {
+    if (event.source === 'google') {
+      setMessage('Este evento viene de Google Calendar. Edítalo en Google Calendar y vuelve a sincronizar.')
+      return
+    }
     setSelectedDay(null)
     setDraft({ ...event, startTime: event.startTime ?? '', endTime: event.endTime ?? '' })
   }
@@ -78,53 +142,30 @@ export default function CalendarioTool() {
     setMessage(`Feriados actualizados: ${result.total} para ${result.year}.`)
   })
 
-  const exportGoogleCalendar = () => {
-    if (!events.length) {
-      setMessage(`No hay eventos para exportar en ${year}.`)
-      return
-    }
-    const calendar = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//CHUCKs Web//Calendario//ES',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-      ...events.flatMap((event) => {
-        const description = [event.label, event.description].filter(Boolean).join('\n\n')
-        const lines = [
-          'BEGIN:VEVENT',
-          `UID:chucks-calendar-${event.id}@chucks-web`,
-          `DTSTAMP:${toIcsUtc(new Date())}`,
-          `SUMMARY:${escapeIcs(event.title)}`,
-          `DTSTART${event.allDay ? ';VALUE=DATE' : ''}:${event.allDay ? event.startDate.replaceAll('-', '') : toIcsLocal(event.startDate, event.startTime || '00:00')}`,
-          `DTEND${event.allDay ? ';VALUE=DATE' : ''}:${event.allDay ? nextDate(event.endDate) : toIcsLocal(event.endDate, event.endTime || addMinutes(event.startTime || '00:00', 60))}`,
-          ...(description ? [`DESCRIPTION:${escapeIcs(description)}`] : []),
-          'END:VEVENT',
-        ]
-        return lines
-      }),
-      'END:VCALENDAR',
-    ].join('\r\n') + '\r\n'
-    const file = new Blob([calendar], { type: 'text/calendar;charset=utf-8' })
-    const url = URL.createObjectURL(file)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `calendario-${year}.ics`
-    link.click()
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-    setMessage(`Se descargó el calendario de ${year}. Importa el archivo .ics en Google Calendar.`)
-  }
-
   const daysEvents = (day: string) => events.filter((event) => event.startDate <= day && event.endDate >= day).sort((a, b) => Number(a.allDay) === Number(b.allDay) ? (a.startTime ?? '').localeCompare(b.startTime ?? '') : a.allDay ? -1 : 1)
   const years = Array.from({ length: Math.max(8, CURRENT_YEAR - 1999 + 2) }, (_, index) => CURRENT_YEAR + 1 - index).filter((value) => value >= 2000)
 
   return <section className={styles.calendar}>
     <SectionHeading eyebrow="PLANIFICA TU TIEMPO" title="Calendario" description="Eventos, fechas importantes y recordatorios en una vista anual." status="PostgreSQL local" />
     {message && <div className={styles.notice} role="status"><span>{message}</span><button onClick={() => setMessage('')} aria-label="Cerrar">×</button></div>}
-    <div className={styles.yearBar}><button className={styles.secondaryButton} disabled={year <= 2000} onClick={() => setYear((value) => value - 1)} aria-label="Año anterior">‹</button><label><span>Año</span><select value={year} onChange={(event) => setYear(Number(event.target.value))}>{years.map((value) => <option key={value} value={value}>{value}</option>)}</select></label><button className={styles.secondaryButton} disabled={year >= CURRENT_YEAR + 1} onClick={() => setYear((value) => value + 1)} aria-label="Año siguiente">›</button><button className={styles.secondaryButton} disabled={busy} onClick={updateHolidays}>{busy ? 'Actualizando…' : 'Actualizar feriados de Chile'}</button><button className={styles.googleButton} onClick={exportGoogleCalendar}>Exportar a Google Calendar</button></div>
+    <div className={styles.yearBar}><button className={styles.secondaryButton} disabled={year <= 2000} onClick={() => setYear((value) => value - 1)} aria-label="Año anterior">‹</button><label><span>Año</span><select value={year} onChange={(event) => setYear(Number(event.target.value))}>{years.map((value) => <option key={value} value={value}>{value}</option>)}</select></label><button className={styles.secondaryButton} disabled={year >= CURRENT_YEAR + 1} onClick={() => setYear((value) => value + 1)} aria-label="Año siguiente">›</button><button className={styles.secondaryButton} disabled={busy} onClick={updateHolidays}>{busy ? 'Actualizando…' : 'Actualizar feriados de Chile'}</button></div>
+    <div className={styles.googlePanel}>
+      <div className={styles.googleInfo}>
+        <span className={styles.eyebrow}>GOOGLE CALENDAR</span>
+        <strong>{googleStatus?.connected ? 'Cuenta conectada' : 'Importa tus eventos'}</strong>
+        <span>{googleStatus?.connected
+          ? `${googleStatus.email || 'Cuenta de Google'}${googleStatus.lastSyncAt ? ` · Sincronizado ${formatSyncDate(googleStatus.lastSyncAt)}` : ' · Aún sin sincronizar'}`
+          : 'Conecta tu cuenta para traer los eventos de Google a esta vista y mantenerlos al día.'}</span>
+      </div>
+      <div className={styles.googleActions}>
+        {googleStatus?.connected
+          ? <><button className={styles.googleButton} disabled={busy} onClick={syncGoogle}>{busy ? 'Sincronizando…' : `Sincronizar ${year}`}</button><button className={styles.secondaryButton} disabled={busy} onClick={disconnectGoogle}>Desconectar</button></>
+          : <button className={styles.googleButton} disabled={busy} onClick={connectGoogle}>Conectar con Google</button>}
+      </div>
+    </div>
     <div className={styles.monthGrid}>{MONTHS.map((_, index) => <Month key={`${year}-${index}`} year={year} month={index + 1} events={events} onSelectDay={openDay} />)}</div>
 
-    {selectedDay && <div className={styles.overlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedDay(null) }}><section className={styles.dayDialog} role="dialog" aria-modal="true" aria-labelledby="calendar-day-title"><header><div><span className={styles.eyebrow}>AGENDA DEL DÍA</span><h2 id="calendar-day-title">{selectedDayLabel}</h2></div><button className={styles.closeButton} onClick={() => setSelectedDay(null)} aria-label="Cerrar">×</button></header><button className={styles.primaryButton} onClick={() => newEvent(selectedDay)}>＋ Nuevo evento</button><div className={styles.dayAgenda}>{daysEvents(selectedDay).map((event) => <button key={event.id} className={`${styles.agendaEvent} ${styles[`color_${event.color}`]}`} onClick={() => editEvent(event)}><strong>{event.isHoliday && '⚑ '}{event.title}</strong><span>{event.allDay ? 'Todo el día' : `${event.startTime || ''}${event.endTime ? ` – ${event.endTime}` : ''}`}</span></button>)}{!daysEvents(selectedDay).length && <p>Sin eventos para este día.</p>}</div></section></div>}
+    {selectedDay && <div className={styles.overlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedDay(null) }}><section className={styles.dayDialog} role="dialog" aria-modal="true" aria-labelledby="calendar-day-title"><header><div><span className={styles.eyebrow}>AGENDA DEL DÍA</span><h2 id="calendar-day-title">{selectedDayLabel}</h2></div><button className={styles.closeButton} onClick={() => setSelectedDay(null)} aria-label="Cerrar">×</button></header><button className={styles.primaryButton} onClick={() => newEvent(selectedDay)}>＋ Nuevo evento</button><div className={styles.dayAgenda}>{daysEvents(selectedDay).map((event) => <button key={event.id} className={`${styles.agendaEvent} ${styles[`color_${event.color}`]}`} onClick={() => editEvent(event)}><strong>{event.isHoliday && '⚑ '}{event.title}</strong><span>{event.source === 'google' && 'Google · '}{event.allDay ? 'Todo el día' : `${event.startTime || ''}${event.endTime ? ` – ${event.endTime}` : ''}`}</span></button>)}{!daysEvents(selectedDay).length && <p>Sin eventos para este día.</p>}</div></section></div>}
 
     {draft && <div className={styles.overlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setDraft(null) }}><form className={styles.eventDialog} onSubmit={(event) => { event.preventDefault(); save() }}><header><div><span className={styles.eyebrow}>{draft.id ? 'EDITAR EVENTO' : 'NUEVO EVENTO'}</span><h2>{draft.id ? draft.title : 'Crear evento'}</h2></div><button type="button" className={styles.closeButton} onClick={() => setDraft(null)} aria-label="Cerrar">×</button></header><div className={styles.formGrid}><label className={styles.wide}>Título<input required maxLength={180} autoFocus value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Ej. Reunión, entrega, viaje…" /></label><label>Etiqueta<input maxLength={80} value={draft.label} onChange={(event) => setDraft({ ...draft, label: event.target.value })} placeholder="Personal, trabajo…" /></label><label>Color<select value={draft.color} onChange={(event) => setDraft({ ...draft, color: event.target.value })}>{colors.map((color) => <option key={color} value={color}>{colorName(color)}</option>)}</select></label><label>Desde<input type="date" required value={draft.startDate} onChange={(event) => setDraft({ ...draft, startDate: event.target.value, endDate: draft.endDate < event.target.value ? event.target.value : draft.endDate })} /></label><label>Hasta<input type="date" required min={draft.startDate} value={draft.endDate} onChange={(event) => setDraft({ ...draft, endDate: event.target.value })} /></label><label className={`${styles.checkbox} ${styles.wide}`}><input type="checkbox" checked={draft.allDay} onChange={(event) => setDraft({ ...draft, allDay: event.target.checked })} /> Todo el día</label>{!draft.allDay && <><label>Hora de inicio<input type="time" value={draft.startTime} onChange={(event) => setDraft({ ...draft, startTime: event.target.value })} /></label><label>Hora de fin<input type="time" value={draft.endTime} onChange={(event) => setDraft({ ...draft, endTime: event.target.value })} /></label></>}<label className={styles.wide}>Descripción<textarea rows={4} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} /></label><ImageUrlField value={draft.images} onChange={(images) => setDraft({ ...draft, images })} /></div><footer>{draft.id && !draft.isHoliday ? <button type="button" className={styles.dangerButton} onClick={remove}>Eliminar</button> : <span /> }<span /><button type="button" className={styles.secondaryButton} onClick={() => setDraft(null)}>Cancelar</button><button className={styles.primaryButton} disabled={busy}>{busy ? 'Guardando…' : 'Guardar evento'}</button></footer></form></div>}
   </section>
@@ -152,16 +193,7 @@ function ImageUrlField({ value, onChange }: { value: string[]; onChange: (images
 function colorName(color: string) { return ({ teal: 'Turquesa', azul: 'Azul', naranja: 'Naranja', rojo: 'Rojo', verde: 'Verde', morado: 'Morado', amarillo: 'Amarillo' })[color] ?? color }
 function localToday() { return TODAY_ISO }
 function errorText(error: unknown) { return error instanceof Error ? error.message : String(error) }
-function escapeIcs(value: string) { return value.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;') }
-function toIcsUtc(date: Date) { return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '') }
-function toIcsLocal(date: string, time: string) { return `${date.replaceAll('-', '')}T${time.replace(':', '')}00` }
-function nextDate(value: string) {
-  const [year, month, day] = value.split('-').map(Number)
-  const date = new Date(Date.UTC(year, month - 1, day + 1))
-  return `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`
-}
-function addMinutes(value: string, amount: number) {
-  const [hours, minutes] = value.split(':').map(Number)
-  const total = (hours * 60 + minutes + amount) % (24 * 60)
-  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+function formatSyncDate(value: string) {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? '' : date.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' })
 }

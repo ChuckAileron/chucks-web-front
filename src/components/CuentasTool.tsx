@@ -22,10 +22,11 @@ import {
 import styles from './CuentasTool.module.css'
 import SectionHeading from './SectionHeading'
 
-type View = 'chart' | 'registers' | 'settings'
+type View = 'registers' | 'settings'
 type AccountDraft = { name: string; description: string; columns: AccountColumn[] }
 type RegisterDraft = { id?: number; name: string; date: string; amount: string; values: Record<string, unknown> }
 const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+const MONTHS_FULL = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 const EMPTY_ACCOUNT: AccountDraft = { name: '', description: '', columns: [] }
 const CURRENT_YEAR = new Date().getFullYear()
 const today = (() => { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` })()
@@ -38,7 +39,7 @@ export default function CuentasTool() {
   const [monthly, setMonthly] = useState<MonthlyTotal[]>([])
   const [years, setYears] = useState<number[]>([])
   const [year, setYear] = useState(CURRENT_YEAR)
-  const [view, setView] = useState<View>('chart')
+  const [view, setView] = useState<View>('registers')
   const [search, setSearch] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
@@ -80,13 +81,13 @@ export default function CuentasTool() {
     event.preventDefault()
     void run(async () => {
       const saved = creating ? await createAccount(accountDraft) : await updateAccount(activeId as number, accountDraft)
-      setCreating(false); setView('chart'); await loadAccounts(saved.id); setMessage(creating ? 'Cuenta creada.' : 'Cuenta actualizada.')
+      setCreating(false); setView('registers'); await loadAccounts(saved.id); setMessage(creating ? 'Cuenta creada.' : 'Cuenta actualizada.')
     })
   }
 
   const removeAccount = () => {
     if (!account || !window.confirm(`¿Eliminar la cuenta “${account.name}” y todos sus movimientos?`)) return
-    void run(async () => { await deleteAccount(account.id); setCreating(false); setActiveId(null); await loadAccounts(); setView('chart'); setMessage('Cuenta eliminada.') })
+    void run(async () => { await deleteAccount(account.id); setCreating(false); setActiveId(null); await loadAccounts(); setView('registers'); setMessage('Cuenta eliminada.') })
   }
 
   const moveAccount = (id: number, direction: -1 | 1) => void run(async () => {
@@ -116,16 +117,106 @@ export default function CuentasTool() {
   const updateColumn = (index: number, patch: Partial<AccountColumn>) => setAccountDraft({ ...accountDraft, columns: accountDraft.columns.map((column, position) => position === index ? { ...column, ...patch } : column) })
   const addColumn = () => setAccountDraft({ ...accountDraft, columns: [...accountDraft.columns, { name: `campo_${accountDraft.columns.length + 1}`, label: 'Nuevo campo', type: 'string', required: false }] })
   const editRegister = (item: AccountRegister) => { setRegisterDraft({ id: item.id, name: item.name, date: item.date, amount: String(item.amount), values: item.values }); setView('registers') }
+  const movementLabel = `${registers.length} ${registers.length === 1 ? 'movimiento' : 'movimientos'}${search.trim() ? ' encontrados' : ''}`
 
   return <section className={styles.accounts}>
-    <SectionHeading eyebrow="ADMINISTRACIÓN PERSONAL" title="Cuentas" description="Controla gastos, pagos y ahorros por cuenta." status="PostgreSQL local" />
-    <nav className={`${styles.tabs} app-tabs`} aria-label="Secciones de cuentas"><button className={view === 'chart' ? 'active' : ''} onClick={() => setView('chart')}>Gráfico</button><button className={view === 'registers' ? 'active' : ''} onClick={() => { setRegisterDraft(null); setView('registers') }}>Movimientos <b>{registers.length}</b></button><button className={view === 'settings' ? 'active' : ''} onClick={() => setView('settings')}>Configurar cuenta</button></nav>
+    <SectionHeading eyebrow="ADMINISTRACIÓN PERSONAL" title="Cuentas" description="Un lugar para organizar tus movimientos." status="PostgreSQL local" />
+    <nav className={`${styles.tabs} app-tabs`} aria-label="Secciones de cuentas">
+      <button className={view === 'registers' ? 'active' : ''} onClick={() => { setRegisterDraft(null); setView('registers') }}>Movimientos <b>{registers.length}</b></button>
+      <button className={view === 'settings' ? 'active' : ''} onClick={() => setView('settings')}>Configurar cuenta</button>
+    </nav>
     <div className={styles.workspace}>
-      <div className={styles.accountBar}><div className={styles.accountTabs}>{accounts.map((item) => <button key={item.id} className={item.id === activeId && !creating ? styles.accountActive : ''} onClick={() => { setActiveId(item.id); setCreating(false); setRegisterDraft(null); setAccountDraft({ name: item.name, description: item.description, columns: item.columns }) }}>{item.name}</button>)}</div><button className={styles.secondaryButton} onClick={() => { setCreating(true); setActiveId(null); setAccountDraft(EMPTY_ACCOUNT); setView('settings') }}>＋ Nueva cuenta</button></div>
+      <div className={styles.accountBar}>
+        <div className={styles.accountTabs}>{accounts.map((item) => <button key={item.id} className={item.id === activeId && !creating ? styles.accountActive : ''} onClick={() => { setActiveId(item.id); setCreating(false); setRegisterDraft(null); setAccountDraft({ name: item.name, description: item.description, columns: item.columns }) }}>{item.name}</button>)}</div>
+        <button className={styles.secondaryButton} onClick={() => { setCreating(true); setActiveId(null); setAccountDraft(EMPTY_ACCOUNT); setView('settings') }}>＋ Nueva cuenta</button>
+      </div>
       {message && <div className={styles.notice} role="status"><span>{message}</span><button onClick={() => setMessage('')} aria-label="Cerrar aviso">×</button></div>}
-      {view === 'settings' ? <form className={styles.editor} onSubmit={saveAccount}><div className={styles.sectionHead}><div><span className={styles.eyebrow}>CONFIGURACIÓN</span><h2>{creating ? 'Nueva cuenta' : 'Configurar cuenta'}</h2></div></div><div className={styles.formGrid}><label>Nombre<input required maxLength={80} value={accountDraft.name} onChange={(event) => setAccountDraft({ ...accountDraft, name: event.target.value })} /></label><label className={styles.wide}>Descripción<textarea value={accountDraft.description} onChange={(event) => setAccountDraft({ ...accountDraft, description: event.target.value })} rows={3} /></label></div><section className={styles.schema}><div className={styles.sectionHead}><div><h3>Campos personalizados</h3><p>Define los datos adicionales de cada movimiento.</p></div><button type="button" className={styles.secondaryButton} onClick={addColumn}>＋ Agregar campo</button></div>{accountDraft.columns.map((column, index) => <div className={styles.columnRow} key={index}><input aria-label="Etiqueta" value={column.label} onChange={(event) => updateColumn(index, { label: event.target.value })} placeholder="Etiqueta" /><input aria-label="Nombre interno" value={column.name} onChange={(event) => updateColumn(index, { name: event.target.value })} placeholder="clave_interna" /><select value={column.type} onChange={(event) => updateColumn(index, { type: event.target.value as AccountColumnType })}>{ACCOUNT_COLUMN_TYPES.map((type) => <option key={type} value={type}>{columnTypeLabel(type)}</option>)}</select><label className={styles.required}><input type="checkbox" checked={column.required} onChange={(event) => updateColumn(index, { required: event.target.checked })} /> Obligatorio</label><button type="button" className={styles.deleteSmall} onClick={() => setAccountDraft({ ...accountDraft, columns: accountDraft.columns.filter((_, i) => i !== index) })}>Quitar</button></div>)}{!accountDraft.columns.length && <p className={styles.muted}>No hay campos personalizados.</p>}</section><section className={styles.schema}><div className={styles.sectionHead}><div><h3>Orden de cuentas</h3><p>Organiza las pestañas de esta sección.</p></div></div>{accounts.map((item, index) => <div className={styles.orderRow} key={item.id}><span>{item.name}</span><button disabled={index === 0 || busy} onClick={() => moveAccount(item.id, -1)} type="button" aria-label={`Subir ${item.name}`}>↑</button><button disabled={index === accounts.length - 1 || busy} onClick={() => moveAccount(item.id, 1)} type="button" aria-label={`Bajar ${item.name}`}>↓</button></div>)}</section><footer className={styles.formFooter}>{account && !creating ? <button type="button" className={styles.dangerButton} onClick={removeAccount}>Eliminar cuenta</button> : <span />}<span /><button className={styles.primaryButton} disabled={busy || !accountDraft.name.trim()}>{busy ? 'Guardando…' : creating ? 'Crear cuenta' : 'Guardar cambios'}</button></footer></form>
-      : view === 'registers' ? <section><div className={styles.sectionHead}><div><span className={styles.eyebrow}>REGISTROS</span><h2>{account?.name ?? 'Movimientos'}</h2></div><button className={styles.primaryButton} disabled={!account} onClick={() => setRegisterDraft({ name: '', date: today, amount: '', values: {} })}>＋ Agregar movimiento</button></div><label className={styles.search}>⌕<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar movimientos…" /></label>{registerDraft && account && <RegisterEditor account={account} draft={registerDraft} setDraft={setRegisterDraft} onSave={saveRegister} onCancel={() => setRegisterDraft(null)} busy={busy} />}{registers.length ? <div className={styles.registerList}>{registers.map((item) => <article key={item.id} className={styles.registerRow}><div className={styles.registerDate}>{formatDate(item.date)}</div><div className={styles.registerInfo}><strong>{item.name}</strong><small>{account?.columns.map((column) => item.values[column.name] !== undefined ? `${column.label}: ${formatAccountValue(column, item.values[column.name])}` : '').filter(Boolean).join(' · ')}</small></div><b className={item.amount < 0 ? styles.negative : styles.positive}>{amountText(item.amount)}</b><div><button className={styles.secondaryButton} onClick={() => editRegister(item)}>Editar</button><button className={styles.deleteSmall} onClick={() => removeRegister(item)}>Eliminar</button></div></article>)}</div> : <EmptyAccount text="No hay movimientos para mostrar." />}</section>
-      : <section><div className={styles.chartHead}><div><span className={styles.eyebrow}>RESUMEN ANUAL</span><h2>{account ? `Variación mensual · ${account.name}` : 'Variación mensual'}</h2></div><label>Año<select value={year} onChange={(event) => setYear(Number(event.target.value))}>{years.map((value) => <option key={value} value={value}>{value}</option>)}</select></label></div>{account && monthly.some((item) => item.count > 0) ? <MonthlyChart totals={monthly} /> : <EmptyAccount text={account ? `Sin movimientos en ${year}. Agrega movimientos para ver el gráfico.` : 'Crea una cuenta para comenzar a registrar movimientos.'} />}</section>}
+      {view === 'settings' ? <form className={styles.editor} onSubmit={saveAccount}>
+        <div className={styles.sectionHead}>
+          <div><span className={styles.eyebrow}>CONFIGURACIÓN</span><h2>{creating ? 'Nueva cuenta' : 'Configurar cuenta'}</h2></div>
+        </div>
+        <div className={styles.formGrid}>
+          <label>Nombre<input required maxLength={80} value={accountDraft.name} onChange={(event) => setAccountDraft({ ...accountDraft, name: event.target.value })} /></label>
+          <label className={styles.wide}>Descripción<textarea value={accountDraft.description} onChange={(event) => setAccountDraft({ ...accountDraft, description: event.target.value })} rows={3} /></label>
+        </div>
+        <section className={styles.schema}>
+          <div className={styles.sectionHead}>
+            <div><h3>Campos personalizados</h3><p>Define los datos adicionales de cada movimiento.</p></div>
+            <button type="button" className={styles.secondaryButton} onClick={addColumn}>＋ Agregar campo</button>
+          </div>
+          {accountDraft.columns.map((column, index) => <div className={styles.columnRow} key={index}>
+            <input aria-label="Etiqueta" value={column.label} onChange={(event) => updateColumn(index, { label: event.target.value })} placeholder="Etiqueta" />
+            <input aria-label="Nombre interno" value={column.name} onChange={(event) => updateColumn(index, { name: event.target.value })} placeholder="clave_interna" />
+            <select value={column.type} onChange={(event) => updateColumn(index, { type: event.target.value as AccountColumnType })}>{ACCOUNT_COLUMN_TYPES.map((type) => <option key={type} value={type}>{columnTypeLabel(type)}</option>)}</select>
+            <label className={styles.required}><input type="checkbox" checked={column.required} onChange={(event) => updateColumn(index, { required: event.target.checked })} /> Obligatorio</label>
+            <button type="button" className={styles.deleteSmall} onClick={() => setAccountDraft({ ...accountDraft, columns: accountDraft.columns.filter((_, i) => i !== index) })}>Quitar</button>
+          </div>)}
+          {!accountDraft.columns.length && <p className={styles.muted}>No hay campos personalizados.</p>}
+        </section>
+        <section className={styles.schema}>
+          <div className={styles.sectionHead}><div><h3>Orden de cuentas</h3><p>Organiza las pestañas de esta sección.</p></div></div>
+          {accounts.map((item, index) => <div className={styles.orderRow} key={item.id}>
+            <span>{item.name}</span>
+            <button disabled={index === 0 || busy} onClick={() => moveAccount(item.id, -1)} type="button" aria-label={`Subir ${item.name}`}>↑</button>
+            <button disabled={index === accounts.length - 1 || busy} onClick={() => moveAccount(item.id, 1)} type="button" aria-label={`Bajar ${item.name}`}>↓</button>
+          </div>)}
+        </section>
+        <footer className={styles.formFooter}>
+          {account && !creating ? <button type="button" className={styles.dangerButton} onClick={removeAccount}>Eliminar cuenta</button> : <span />}
+          <span />
+          <button className={styles.primaryButton} disabled={busy || !accountDraft.name.trim()}>{busy ? 'Guardando…' : creating ? 'Crear cuenta' : 'Guardar cambios'}</button>
+        </footer>
+      </form>
+      : <>
+        {account && <section className={styles.accountCard} aria-label="Cuenta seleccionada">
+          <span className={styles.accountIcon} aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 9h18m-5 4h2" /></svg></span>
+          <div className={styles.accountCopy}>
+            <span className={styles.eyebrow}>Cuenta seleccionada</span>
+            <h2>{account.name}</h2>
+            <p>{account.description || 'Revisa los registros de esta cuenta.'}</p>
+          </div>
+          <span className={styles.accountCount}>{movementLabel}</span>
+        </section>}
+        <section className={styles.chartSection} aria-labelledby="accounts-chart-title">
+          <div className={styles.chartHead}>
+            <div><span className={styles.eyebrow}>RESUMEN ANUAL</span><h2 id="accounts-chart-title">{account ? `Variación mensual · ${account.name}` : 'Variación mensual'}</h2></div>
+            <label>Año<select value={year} onChange={(event) => setYear(Number(event.target.value))}>{years.map((value) => <option key={value} value={value}>{value}</option>)}</select></label>
+          </div>
+          {account && monthly.some((item) => item.count > 0) ? <MonthlyChart totals={monthly} /> : <EmptyAccount text={account ? `Sin movimientos en ${year}. Agrega movimientos para ver el gráfico.` : 'Crea una cuenta para comenzar a registrar movimientos.'} />}
+        </section>
+        <section className={styles.records} aria-labelledby="accounts-records-title">
+          <div className={styles.recordsHead}>
+            <div><h2 id="accounts-records-title">Movimientos</h2><p>Revisa los registros de esta cuenta.</p></div>
+            <button className={styles.primaryButton} disabled={!account} onClick={() => setRegisterDraft({ name: '', date: today, amount: '', values: {} })}>＋ Agregar movimiento</button>
+          </div>
+          <div className={styles.controls}>
+            <label className={styles.search}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m16 16 4 4" /></svg>
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar movimientos…" aria-label="Buscar movimientos" />
+            </label>
+          </div>
+          {registerDraft && account && <RegisterEditor account={account} draft={registerDraft} setDraft={setRegisterDraft} onSave={saveRegister} onCancel={() => setRegisterDraft(null)} busy={busy} />}
+          {registers.length ? <div className={styles.table} role="region" aria-label="Movimientos de la cuenta">
+            <div className={styles.tableHead} aria-hidden="true"><span>Concepto</span><span>Mes</span><span>Fecha</span><span className={styles.amountHead}>Monto</span><span /></div>
+            {registers.map((item) => <article key={item.id} className={styles.row}>
+              <div className={styles.concept}>
+                <span className={styles.rowIcon} aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" /></svg></span>
+                <div>
+                  <strong>{item.name}</strong>
+                  {detailText(account, item) && <small>{detailText(account, item)}</small>}
+                </div>
+              </div>
+              <div className={`${styles.cell} ${styles.month}`}>{formatMonth(item.date)}</div>
+              <div className={`${styles.cell} ${styles.date}`}>{formatDate(item.date)}</div>
+              <b className={`${styles.amount} ${item.amount < 0 ? styles.negative : styles.positive}`}>{amountText(item.amount)}</b>
+              <div className={styles.actions}>
+                <button className={styles.iconButton} onClick={() => editRegister(item)} aria-label={`Editar ${item.name}`}><svg viewBox="0 0 24 24"><path d="m4 20 4-.8L19 8a2 2 0 0 0-3-3L5 16l-1 4ZM14 7l3 3" /></svg></button>
+                <button className={`${styles.iconButton} ${styles.dangerIcon}`} onClick={() => removeRegister(item)} aria-label={`Eliminar ${item.name}`}><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5" /></svg></button>
+              </div>
+            </article>)}
+          </div> : <EmptyAccount text="No hay movimientos para mostrar." />}
+        </section>
+      </>}
     </div>
   </section>
 }
@@ -149,6 +240,8 @@ function MonthlyChart({ totals }: { totals: MonthlyTotal[] }) {
 
 function EmptyAccount({ text }: { text: string }) { return <div className={styles.empty}><span>▤</span><p>{text}</p></div> }
 function formatDate(value: string) { const [year, month, day] = value.split('-'); return `${day}/${month}/${year}` }
+function formatMonth(value: string) { const [year, month] = value.split('-'); return `${MONTHS_FULL[Number(month) - 1] ?? ''} ${year}` }
+function detailText(account: Account | null, item: AccountRegister) { return account?.columns.map((column) => item.values[column.name] !== undefined ? `${column.label}: ${formatAccountValue(column, item.values[column.name])}` : '').filter(Boolean).join(' · ') ?? '' }
 function formatAccountValue(column: AccountColumn, value: unknown) { if (column.type === 'boolean') return value ? 'Sí' : 'No'; if (Array.isArray(value)) return value.join(', '); return String(value ?? '—') }
 function columnTypeLabel(type: AccountColumnType) { return ({ string: 'Texto', number: 'Número', boolean: 'Sí / No', date: 'Fecha', url: 'URL', tags: 'Etiquetas' })[type] }
 function errorText(error: unknown) { return error instanceof Error ? error.message : String(error) }

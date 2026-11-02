@@ -22,6 +22,7 @@
 .contextHeading p { margin: 4px 0 0; color: var(--muted); font-size: var(--fs-xs); }
 .tagFilters { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 0 0 18px; }
 .tagFiltersLabel { margin-right: 3px; color: var(--muted); font-size: var(--fs-xs); font-weight: 650; }
+.tagFiltersEmpty { color: var(--muted); font-size: var(--fs-xs); }
 .tagFilter { min-height: var(--control-height-compact); display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: var(--fs-xs); font-weight: 600; }
 .tagFilter:hover { border-color: rgba(8,120,104,.4); color: var(--teal); }
 .tagFilter b { min-width: 17px; padding: 1px 5px; border-radius: 999px; background: rgba(8,120,104,.1); color: var(--teal); font-size: var(--fs-2xs); text-align: center; }
@@ -54,9 +55,10 @@
 .cardTags { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 0 14px 10px; }
 .cardTag { max-width: 100%; overflow-wrap: anywhere; padding: 3px 8px; border: 1px solid rgba(8,120,104,.2); border-radius: 999px; background: rgba(8,120,104,.08); color: var(--teal); font-size: var(--fs-2xs); font-weight: 650; }
 .cardTag:hover { border-color: var(--teal); }
-.editTagsButton { padding: 3px 6px; border: 0; background: transparent; color: var(--muted); font-size: var(--fs-2xs); font-weight: 650; }
-.editTagsButton:hover { color: var(--teal); }
+.editTagsButton { padding: 4px 8px; border: 1px dashed rgba(8,120,104,.42); border-radius: 999px; background: transparent; color: var(--teal); font-size: var(--fs-2xs); font-weight: 650; }
+.editTagsButton:hover { border-style: solid; background: rgba(8,120,104,.08); }
 .tagForm { display: grid; gap: 6px; margin: 0 14px 12px; }
+.tagForm > label { color: var(--muted); font-size: var(--fs-2xs); font-weight: 650; }
 .tagForm input { width: 100%; min-height: var(--control-height-compact); padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--control-radius); background: var(--canvas); color: var(--ink); font: inherit; font-size: var(--fs-xs); }
 .tagFormActions { display: flex; gap: 6px; }
 .tagSaveButton, .tagCancelButton { min-height: var(--control-height-compact); padding: 4px 9px; border-radius: var(--control-radius); font-size: var(--fs-2xs); font-weight: 650; }
