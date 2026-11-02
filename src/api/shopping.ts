@@ -17,6 +17,9 @@ export interface ShopItem {
   price: number | null
   usdPrice: number | null
   currency: string | null
+  priceSource: 'scraped' | 'search' | null
+  manualPrice: number | null
+  manualCurrency: string | null
   condition: string | null
   store: string | null
   tags: string[]
@@ -45,5 +48,8 @@ export const refreshShopItems = (contextId: number) =>
   requestJson<{ updated: number; failed: number }>(`/shopping/contexts/${contextId}/refresh`, { method: 'POST' })
 export const clearShopItems = (contextId: number) =>
   requestJson<{ removed: number }>(`/shopping/contexts/${contextId}/inactive`, { method: 'DELETE' })
-export const updateShopItemTags = (contextId: number, itemId: number, tags: string[]) =>
-  requestJson<ShopItem>(`/shopping/contexts/${contextId}/items/${itemId}`, { method: 'PATCH', body: { tags } })
+export const updateShopItem = (
+  contextId: number,
+  itemId: number,
+  updates: { tags?: string[]; manualPrice?: number | null; manualCurrency?: string | null },
+) => requestJson<ShopItem>(`/shopping/contexts/${contextId}/items/${itemId}`, { method: 'PATCH', body: updates })

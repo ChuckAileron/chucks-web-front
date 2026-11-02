@@ -10,7 +10,7 @@ import {
   fetchShopItems,
   refreshShopItems,
   renameShopContext,
-  updateShopItemTags,
+  updateShopItem,
   type ShopContext,
   type ShopItem,
   type ShopSort,
@@ -177,9 +177,18 @@ export default function ShoppingWishlistTool() {
   const saveItemTags = (item: ShopItem, tags: string[]) => {
     if (!active) return
     void run(async () => {
-      const updated = await updateShopItemTags(active.id, item.id, tags)
+      const updated = await updateShopItem(active.id, item.id, { tags })
       setItems((current) => current.map((entry) => entry.id === updated.id ? updated : entry))
       setMessage(tags.length ? 'Etiquetas actualizadas.' : 'Etiquetas quitadas.')
+    })
+  }
+
+  const saveItemPrice = (item: ShopItem, manualPrice: number | null, manualCurrency: string | null) => {
+    if (!active) return
+    void run(async () => {
+      const updated = await updateShopItem(active.id, item.id, { manualPrice, manualCurrency })
+      setItems((current) => current.map((entry) => entry.id === updated.id ? updated : entry))
+      setMessage(manualPrice === null ? 'Se quitó el precio manual.' : 'Precio manual guardado.')
     })
   }
 
@@ -226,17 +235,22 @@ export default function ShoppingWishlistTool() {
           ? <div className={styles.empty}><span>🛒</span><strong>Aún no hay artículos en esta pestaña.</strong><p>Pega enlaces de tiendas o marketplaces y pulsa “Analizar y guardar”.</p></div>
           : visibleItems.length === 0
             ? <div className={styles.empty}><span aria-hidden="true">#</span><strong>No hay artículos con esta etiqueta.</strong><p>Prueba con otra categoría o quita el filtro.</p><button className={styles.secondaryButton} onClick={() => setActiveTag(null)}>Ver todos</button></div>
-            : <div className={styles.cards}>{visibleItems.map((item) => <ShopItemCard key={item.id} item={item} busy={busy} onRemove={() => removeItem(item)} onSaveTags={(tags) => saveItemTags(item, tags)} onFilterTag={(tag) => setActiveTag(tag.toLocaleLowerCase())} />)}</div>}
+             : <div className={styles.cards}>{visibleItems.map((item) => <ShopItemCard key={item.id} item={item} busy={busy} onRemove={() => removeItem(item)} onSaveTags={(tags) => saveItemTags(item, tags)} onSavePrice={(price, currency) => saveItemPrice(item, price, currency)} onFilterTag={(tag) => setActiveTag(tag.toLocaleLowerCase())} />)}</div>}
       </> : <div className={styles.empty}><span>🛒</span><strong>No hay pestañas de contexto.</strong><p>Crea una pestaña, por ejemplo “Accesorios PC”, para empezar.</p><button className={styles.primaryButton} onClick={() => setCreating(true)}>＋ Crear contexto</button></div>}
     </section>
   )
 }
 
-function ShopItemCard({ item, busy, onRemove, onSaveTags, onFilterTag }: { item: ShopItem; busy: boolean; onRemove: () => void; onSaveTags: (tags: string[]) => void; onFilterTag: (tag: string) => void }) {
+function ShopItemCard({ item, busy, onRemove, onSaveTags, onSavePrice, onFilterTag }: { item: ShopItem; busy: boolean; onRemove: () => void; onSaveTags: (tags: string[]) => void; onSavePrice: (price: number | null, currency: string | null) => void; onFilterTag: (tag: string) => void }) {
   const [imageFailed, setImageFailed] = useState(false)
   const [editingTags, setEditingTags] = useState(false)
   const [tagDraft, setTagDraft] = useState('')
+  const [editingPrice, setEditingPrice] = useState(false)
+  const [priceDraft, setPriceDraft] = useState('')
+  const [currencyDraft, setCurrencyDraft] = useState('CLP')
   const itemTags = item.tags ?? []
+  const parsedPriceDraft = parsePriceInput(priceDraft, currencyDraft.trim().toUpperCase())
+  const validPriceDraft = parsedPriceDraft !== null && /^[A-Z]{3}$/.test(currencyDraft.trim().toUpperCase())
 
   const openTagEditor = () => {
     setTagDraft(itemTags.join(', '))
@@ -247,6 +261,21 @@ function ShopItemCard({ item, busy, onRemove, onSaveTags, onFilterTag }: { item:
     event.preventDefault()
     onSaveTags(parseTags(tagDraft))
     setEditingTags(false)
+  }
+
+  const openPriceEditor = () => {
+    setPriceDraft(String(item.manualPrice ?? item.price ?? ''))
+    setCurrencyDraft(item.manualCurrency ?? item.currency ?? 'CLP')
+    setEditingPrice(true)
+  }
+
+  const savePrice = (event: FormEvent) => {
+    event.preventDefault()
+    const currency = currencyDraft.trim().toUpperCase()
+    const price = parsedPriceDraft
+    if (price === null || !/^[A-Z]{3}$/.test(currency)) return
+    onSavePrice(price, currency)
+    setEditingPrice(false)
   }
 
   return <article className={`${styles.card} ${!item.active ? styles.inactive : ''}`}>
@@ -265,9 +294,27 @@ function ShopItemCard({ item, busy, onRemove, onSaveTags, onFilterTag }: { item:
       <input id={`item-tags-${item.id}`} autoFocus value={tagDraft} onChange={(event) => setTagDraft(event.target.value)} maxLength={500} placeholder="Ej. regalos, ofertas, PC" aria-label={`Etiquetas de ${item.name}`} />
       <div className={styles.tagFormActions}><button className={styles.tagSaveButton} disabled={busy}>Guardar</button><button type="button" className={styles.tagCancelButton} onClick={() => setEditingTags(false)}>Cancelar</button></div>
     </form>}
+    {editingPrice && <form className={styles.priceForm} onSubmit={savePrice}>
+      <label htmlFor={`item-price-${item.id}`}>Precio manual</label>
+      <div className={styles.priceInputs}>
+        <input id={`item-price-${item.id}`} autoFocus type="text" inputMode="decimal" required value={priceDraft} onChange={(event) => setPriceDraft(event.target.value)} placeholder={currencyDraft === 'CLP' ? '519.900' : '519.90'} />
+        <input aria-label={`Moneda del precio de ${item.name}`} value={currencyDraft} onChange={(event) => setCurrencyDraft(event.target.value.toUpperCase())} maxLength={3} minLength={3} pattern="[A-Za-z]{3}" placeholder="CLP" required />
+      </div>
+      <div className={styles.priceFormActions}>
+        <button className={styles.tagSaveButton} disabled={busy || !validPriceDraft}>Guardar precio</button>
+        {item.manualPrice !== null && <button type="button" className={styles.tagCancelButton} disabled={busy} onClick={() => { onSavePrice(null, null); setEditingPrice(false) }}>Quitar manual</button>}
+        <button type="button" className={styles.tagCancelButton} onClick={() => setEditingPrice(false)}>Cancelar</button>
+      </div>
+    </form>}
     <div className={styles.cardBottom}>
       {item.store && <span className={styles.store}>{item.store}</span>}
-      <div className={styles.priceBlock}><strong>{formatPrice(item)}</strong>{item.condition && <small>{item.condition}</small>}{item.error && <small className={styles.error}>{item.error}</small>}</div>
+      <div className={styles.priceBlock}>
+        <strong>{formatPrice(item)}</strong>
+        {item.manualPrice !== null ? <small>Precio manual</small> : item.priceSource === 'search' ? <small>Resultado de búsqueda · aproximado</small> : null}
+        {item.condition && <small>{item.condition}</small>}
+        {item.error && item.manualPrice === null && <small className={styles.error}>{item.error}</small>}
+        <button type="button" className={styles.priceEditButton} disabled={busy} onClick={() => editingPrice ? setEditingPrice(false) : openPriceEditor()}>{editingPrice ? 'Cerrar precio' : item.manualPrice !== null ? 'Editar precio manual' : '＋ Precio manual'}</button>
+      </div>
       <button type="button" className={styles.removeItemButton} disabled={busy} onClick={onRemove} aria-label={`Eliminar ${item.name}`}>Eliminar</button>
     </div>
   </article>
@@ -286,10 +333,38 @@ function parseTags(value: string) {
 }
 
 function formatPrice(item: ShopItem) {
-  if (item.price === null) return 'Precio pendiente'
-  const primary = formatMoney(item.price, item.currency)
-  if (item.usdPrice !== null && (item.currency || 'USD') !== 'USD') return `${primary} · ${formatMoney(item.usdPrice, 'USD')}`
+  const value = item.manualPrice ?? item.price
+  if (value === null) return 'Precio pendiente'
+  const currency = item.manualPrice !== null ? item.manualCurrency : item.currency
+  const primary = formatMoney(value, currency)
+  if (item.manualPrice === null && item.usdPrice !== null && (item.currency || 'USD') !== 'USD') return `${primary} · ${formatMoney(item.usdPrice, 'USD')}`
   return primary
+}
+
+function parsePriceInput(value: string, currency: string): number | null {
+  let normalized = value.trim().replace(/[\s'’]/g, '')
+  if (!normalized || !/^[\d.,]+$/.test(normalized)) return null
+  if (['ARS', 'BRL', 'CLP', 'COP', 'HUF', 'IDR', 'JPY', 'KRW', 'VND'].includes(currency)) {
+    normalized = normalized.replace(/[.,]/g, '')
+  } else {
+    const comma = normalized.lastIndexOf(',')
+    const dot = normalized.lastIndexOf('.')
+    if (comma >= 0 && dot >= 0) {
+      const decimal = comma > dot ? ',' : '.'
+      const grouping = decimal === ',' ? /\./g : /,/g
+      normalized = normalized.replace(grouping, '').replace(decimal, '.')
+    } else if (comma >= 0) {
+      const trailingDigits = normalized.length - comma - 1
+      normalized = trailingDigits === 3
+        ? normalized.replace(/,/g, '')
+        : normalized.replace(',', '.')
+    } else if (dot >= 0 && (normalized.match(/\./g)?.length ?? 0) > 1) {
+      const decimal = normalized.lastIndexOf('.')
+      normalized = normalized.slice(0, decimal).replace(/\./g, '') + normalized.slice(decimal)
+    }
+  }
+  const price = Number(normalized)
+  return Number.isFinite(price) && price >= 0 ? price : null
 }
 
 function formatMoney(value: number, currency: string | null) {

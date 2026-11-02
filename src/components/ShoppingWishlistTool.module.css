@@ -66,6 +66,14 @@
 .tagSaveButton:disabled { opacity: .5; cursor: not-allowed; }
 .tagCancelButton { border: 1px solid var(--line); background: transparent; color: var(--ink); }
 .tagCancelButton:hover { background: rgba(255,255,255,.06); }
+.priceForm { display: grid; gap: 6px; margin: 0 14px 12px; }
+.priceForm > label { color: var(--muted); font-size: var(--fs-2xs); font-weight: 650; }
+.priceInputs { display: grid; grid-template-columns: minmax(0, 1fr) 58px; gap: 6px; }
+.priceInputs input { min-width: 0; min-height: var(--control-height-compact); padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--control-radius); background: var(--canvas); color: var(--ink); font: inherit; font-size: var(--fs-xs); }
+.priceFormActions { display: flex; flex-wrap: wrap; gap: 6px; }
+.priceEditButton { justify-self: start; padding: 3px 0; border: 0; background: transparent; color: var(--teal); font-size: var(--fs-2xs); font-weight: 650; }
+.priceEditButton:hover { text-decoration: underline; }
+.priceEditButton:disabled { opacity: .5; cursor: not-allowed; }
 .priceBlock { display: grid; gap: 5px; }
 .priceBlock strong { font-size: var(--fs-lg); }
 .priceBlock small { color: var(--muted); font-size: var(--fs-xs); }
