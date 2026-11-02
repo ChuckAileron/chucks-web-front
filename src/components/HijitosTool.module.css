@@ -28,7 +28,7 @@
 .sectionHead p { margin: 3px 0 0; color: var(--muted); font-size: var(--fs-sm); }
 .trackGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .track { --progress: 0%; min-width: 0; overflow: hidden; display: grid; align-content: start; grid-template-columns: 124px minmax(0, 1fr); grid-template-areas: "photo profile" "meter meter" "head head" "tasks tasks" "done done"; border: 1px solid var(--line); border-radius: 12px; background: var(--canvas); }
-.trackBanner { grid-area: photo; width: 88px; height: 88px; position: relative; display: grid; place-items: center; overflow: hidden; align-self: center; justify-self: center; border-radius: 10px; background: rgba(93,193,185,.12); }
+.trackBanner { grid-area: photo; width: 88px; height: 88px; position: relative; display: grid; place-items: center; overflow: hidden; align-self: center; justify-self: center; margin: 18px; border-radius: 10px; background: rgba(93,193,185,.12); }
 .trackBanner img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .trackBanner > div { display: grid; justify-items: center; gap: 3px; color: var(--teal); }
 .trackBanner > div span { font-size: 25px; }
@@ -123,7 +123,7 @@
   .coverCopy h2 { font-size: 22px; }
   .trackGrid { grid-template-columns: 1fr; }
   .track { grid-template-columns: 108px minmax(0,1fr); }
-  .trackBanner { width: 76px; height: 76px; }
+  .trackBanner { width: 76px; height: 76px; margin: 16px; }
   .trackHeading { padding-right: 10px; }
   .trackHeading h2 { font-size: var(--fs-base); }
   .trackHeading p { font-size: 10px; }
