@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styles from './App.module.css'
 import { Sidebar } from './components/Sidebar'
 import type { NavKey } from './components/Sidebar'
@@ -22,6 +22,15 @@ import { validateSession } from './api/auth'
 import type { Project } from './components/ProjectCard'
 import type { Task } from './components/TaskItem'
 import './styles/index.css'
+
+const NAV_KEYS: NavKey[] = ['home', 'tasks', 'hijitos', 'accounts', 'calendar', 'weight', 'collection', 'wiki', 'shopping', 'sites']
+
+const navFromLocation = (): NavKey => {
+  const hash = window.location.hash.slice(1).replace(/^\/+/, '')
+  return NAV_KEYS.includes(hash as NavKey) ? (hash as NavKey) : 'home'
+}
+
+const navUrl = (key: NavKey) => `#/${key}`
 
 const initialTasks: Task[] = [
   {
@@ -54,7 +63,7 @@ const notificationProject: Project = {
 function App() {
   const [authToken, setAuthToken] = useState(() => new URLSearchParams(window.location.hash.slice(1)).has('resetPassword') ? null : sessionStorage.getItem('chucks.auth-token'))
   const [checkingSession, setCheckingSession] = useState(Boolean(authToken))
-  const [activeNav, setActiveNav] = useState<NavKey>('home')
+  const [activeNav, setActiveNav] = useState<NavKey>(navFromLocation)
   const [menuOpen, setMenuOpen] = useState(false)
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [contexts, setContexts] = useState<string[]>(initialContexts)
@@ -89,6 +98,22 @@ function App() {
     document.addEventListener('keydown', handleEsc)
     return () => document.removeEventListener('keydown', handleEsc)
   }, [])
+
+  useEffect(() => {
+    const handlePopState = () => setActiveNav(navFromLocation())
+    window.addEventListener('popstate', handlePopState)
+    window.addEventListener('hashchange', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      window.removeEventListener('hashchange', handlePopState)
+    }
+  }, [])
+
+  const navigate = useCallback((key: NavKey) => {
+    if (key === activeNav) return
+    window.history.pushState({ nav: key }, '', navUrl(key))
+    setActiveNav(key)
+  }, [activeNav])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
@@ -213,7 +238,7 @@ function App() {
       <div className={`${styles.scrim} ${menuOpen ? styles.open : ''}`} onClick={() => setMenuOpen(false)} />
       <Sidebar
         active={activeNav}
-        onNavigate={setActiveNav}
+        onNavigate={navigate}
         pendingCount={pendingCount}
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
@@ -228,7 +253,7 @@ function App() {
           onLogout={handleLogout}
         />
         <main className={`${styles.main} ${activeNav === 'home' ? styles.homeMain : ''}`} id="inicio">
-          {activeNav === 'home' && <Hero active={activeNav} onNavigate={setActiveNav} />}
+          {activeNav === 'home' && <Hero active={activeNav} onNavigate={navigate} />}
           {(activeNav === 'home' || activeNav === 'tasks') && (
             <TasksList
               tasks={tasks}
