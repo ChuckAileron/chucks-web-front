@@ -15,10 +15,9 @@ interface SidebarProps {
   pendingCount: number
   open: boolean
   onClose: () => void
-  onAddTask: () => void
 }
 
-export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAddTask }: SidebarProps) {
+export function Sidebar({ active, onNavigate, pendingCount, open, onClose }: SidebarProps) {
   const isHome = active === 'home'
   const navItems: NavItem[] = [
     { key: 'home', label: 'Vista general', icon: '#icon-grid' },
@@ -46,7 +45,6 @@ export function Sidebar({ active, onNavigate, pendingCount, open, onClose, onAdd
           <span className={styles.brandMark} aria-hidden="true">C</span>
           <span className={styles.brandCopy}>CHUCK’s Web<small>ESPACIO PERSONAL</small></span>
         </a>
-        {!isHome && <button className={styles.addTask} type="button" onClick={onAddTask} aria-label="Agregar tarea" title="Agregar tarea"><svg><use href="#icon-plus" /></svg></button>}
       </div>
 
       {isHome && <span className={styles.navLabel}>TU ESPACIO</span>}

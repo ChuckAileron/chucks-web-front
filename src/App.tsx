@@ -242,7 +242,6 @@ function App() {
         pendingCount={pendingCount}
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        onAddTask={handleOpenAddTask}
       />
       <div className={`${styles.shell} ${activeNav === 'home' ? styles.homeShell : ''}`}>
         <Header

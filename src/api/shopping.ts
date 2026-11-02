@@ -19,6 +19,7 @@ export interface ShopItem {
   currency: string | null
   condition: string | null
   store: string | null
+  tags: string[]
   active: boolean
   error: string | null
   checkedAt: string | null
@@ -44,3 +45,5 @@ export const refreshShopItems = (contextId: number) =>
   requestJson<{ updated: number; failed: number }>(`/shopping/contexts/${contextId}/refresh`, { method: 'POST' })
 export const clearShopItems = (contextId: number) =>
   requestJson<{ removed: number }>(`/shopping/contexts/${contextId}/inactive`, { method: 'DELETE' })
+export const updateShopItemTags = (contextId: number, itemId: number, tags: string[]) =>
+  requestJson<ShopItem>(`/shopping/contexts/${contextId}/items/${itemId}`, { method: 'PATCH', body: { tags } })
