@@ -206,7 +206,7 @@ export default function ShoppingWishlistTool() {
         <div className={styles.contextHeading}><div><h2>{active.name}</h2><p>{active.total} artículos guardados</p></div></div>
         <section className={styles.addPanel} aria-label="Agregar enlaces a la lista">
           <label htmlFor="shop-links">Pega uno o varios enlaces, uno por línea</label>
-          <textarea id="shop-links" value={links} onChange={(event) => setLinks(event.target.value)} placeholder={'https://tienda.com/articulo\nhttps://subasta.com/lote'} />
+        <textarea id="shop-links" value={links} onChange={(event) => setLinks(event.target.value)} placeholder={'https://es.aliexpress.com/item/1005009801028580.html\nhttps://tienda.com/articulo'} />
           <div className={styles.toolbar}>
             <button className={styles.primaryButton} disabled={busy || !links.trim()} onClick={saveLinks}>{busy ? 'Analizando…' : 'Analizar y guardar'}</button>
             <label className={styles.sort}><span>Ordenar por</span><select value={sort} onChange={(event) => setSort(event.target.value as ShopSort)}>{SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
